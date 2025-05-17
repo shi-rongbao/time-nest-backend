@@ -8,6 +8,7 @@ import com.shirongbao.timecapsule.pojo.response.UserResponseObject;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -33,4 +34,13 @@ public interface UserService  extends IService<Users> {
 
     // 登出
     void logout();
+
+    // 用户申请注销
+    void deactivateRequest();
+
+    // 查询全部提交注销申请的用户
+    List<Users> queryAllDeactivationRequested();
+
+    // 逻辑删除注销的用户
+    void doLogicDelete(List<Users> usersList);
 }

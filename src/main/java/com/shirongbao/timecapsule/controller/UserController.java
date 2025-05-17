@@ -77,5 +77,10 @@ public class UserController {
     }
 
     // 注销
+    @GetMapping("/deactivateRequest")
+    public Result<Boolean> deactivateRequest() {
+        userService.deactivateRequest();
+        return Result.success(true);
+    }
 
 }

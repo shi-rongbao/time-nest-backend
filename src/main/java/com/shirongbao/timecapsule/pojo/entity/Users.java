@@ -46,7 +46,7 @@ public class Users {
     private Integer deactivationRequested;
 
     // 申请注销时间
-    private String deactivationRequestedTime;
+    private Date deactivationRequestedTime;
 
     // 逻辑删除：1-已删除；0-未删除
     private Integer isDeleted;

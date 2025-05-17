@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timecapsule.common.Result;
 import com.shirongbao.timecapsule.common.constant.RedisConstant;
+import com.shirongbao.timecapsule.common.enums.DeactivationRequestedEnum;
+import com.shirongbao.timecapsule.common.enums.IsDeletedEnum;
 import com.shirongbao.timecapsule.converter.UserConverter;
 import com.shirongbao.timecapsule.dao.UserMapper;
 import com.shirongbao.timecapsule.pojo.entity.Users;
@@ -20,10 +22,14 @@ import com.shirongbao.timecapsule.utils.VerificationCodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -99,6 +105,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         String userAccount = request.getUserAccount();
         LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Users::getUserAccount, userAccount);
+        wrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
         Users users = getOne(wrapper);
         if (ObjectUtils.isEmpty(users)) {
             return null;
@@ -123,6 +130,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             String tokenValue = tokenInfo.getTokenValue();
             // 把用户基础信息放到缓存里
             setUserCache(tokenValue);
+            // 判断是否取消注销
+            cancelDeactivateRequest(users);
             return tokenValue;
         }
 
@@ -191,6 +200,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         removeUserCache(StpUtil.getTokenInfo().getTokenValue());
     }
 
+    @Override
+    public void deactivateRequest() {
+        long userId = StpUtil.getLoginIdAsLong();
+        Users users = getById(userId);
+        // 设置15天的注销冷静期
+        users.setDeactivationRequested(DeactivationRequestedEnum.YES.getCode());
+        users.setDeactivationRequestedTime(DateUtils.addDays(new Date(), 15));
+        updateById(users);
+
+        // 做登出
+        logout();
+    }
+
+    @Override
+    public List<Users> queryAllDeactivationRequested() {
+        LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Users::getDeactivationRequested, DeactivationRequestedEnum.YES.getCode());
+        wrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        return list(wrapper);
+    }
+
+    // 批量更新是带事物的，所以这里用@Transactional（会失效，所以手动加上）
+    @Transactional
+    @Override
+    public void doLogicDelete(List<Users> usersList) {
+        for (Users users : usersList) {
+            users.setIsDeleted(IsDeletedEnum.DELETED.getCode());
+        }
+        updateBatchById(usersList);
+    }
+
     // 获取用户信息，最多执行三次递归
     private UserResponseObject getUserInfoWithRetry(int retryTimes) {
         if (retryTimes > MAX_RETRY_TIMES) {
@@ -256,6 +296,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             return JSON.parseObject(usersString, Users.class);
         }
         return null;
+    }
+
+
+    // 取消注销申请
+    private void cancelDeactivateRequest(Users users) {
+        Integer deactivationRequested = users.getDeactivationRequested();
+        if (deactivationRequested == null) {
+            return;
+        }
+        if (DeactivationRequestedEnum.YES.getCode() == deactivationRequested) {
+            users.setDeactivationRequested(DeactivationRequestedEnum.NO.getCode());
+            updateById(users);
+        }
     }
 
 }
