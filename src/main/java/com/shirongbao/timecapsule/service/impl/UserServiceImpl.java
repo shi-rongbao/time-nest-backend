@@ -184,6 +184,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         return Result.success();
     }
 
+    @Override
+    public void logout() {
+        StpUtil.logout();
+        // 把当前token的缓存移除
+        removeUserCache(StpUtil.getTokenInfo().getTokenValue());
+    }
+
     // 获取用户信息，最多执行三次递归
     private UserResponseObject getUserInfoWithRetry(int retryTimes) {
         if (retryTimes > MAX_RETRY_TIMES) {

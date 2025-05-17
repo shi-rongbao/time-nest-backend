@@ -30,4 +30,7 @@ public interface UserService  extends IService<Users> {
 
     // 修改用户信息
     Result<Boolean> updateUserInfo(UserRequestObject request);
+
+    // 登出
+    void logout();
 }

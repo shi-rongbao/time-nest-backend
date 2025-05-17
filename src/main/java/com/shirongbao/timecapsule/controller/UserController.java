@@ -54,7 +54,7 @@ public class UserController {
     // 登出
     @GetMapping("/logout")
     public Result<Boolean> logout() {
-        StpUtil.logout();
+        userService.logout();
         return Result.success(true);
     }
 
