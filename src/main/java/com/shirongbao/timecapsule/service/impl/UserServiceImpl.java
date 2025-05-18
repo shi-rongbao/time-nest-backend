@@ -12,8 +12,8 @@ import com.shirongbao.timecapsule.common.enums.IsDeletedEnum;
 import com.shirongbao.timecapsule.converter.UserConverter;
 import com.shirongbao.timecapsule.dao.UserMapper;
 import com.shirongbao.timecapsule.pojo.entity.Users;
-import com.shirongbao.timecapsule.pojo.request.UserRequestObject;
-import com.shirongbao.timecapsule.pojo.response.UserResponseObject;
+import com.shirongbao.timecapsule.pojo.request.UsersDto;
+import com.shirongbao.timecapsule.pojo.response.UsersVo;
 import com.shirongbao.timecapsule.service.UserService;
 import com.shirongbao.timecapsule.service.oss.OssService;
 import com.shirongbao.timecapsule.utils.RedisUtil;
@@ -48,7 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private final OssService ossService;
 
     @Override
-    public Result<String> register(UserRequestObject request) {
+    public Result<String> register(UsersDto request) {
         // 先校验验证码是否正确
         String email = request.getEmail();
         String requestVerifyCode = request.getVerifyCode();
@@ -100,7 +100,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     }
 
     @Override
-    public String login(UserRequestObject request) {
+    public String login(UsersDto request) {
         // 查询这个用户是否存在，不存在直接返回
         String userAccount = request.getUserAccount();
         LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
@@ -159,12 +159,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     }
 
     @Override
-    public UserResponseObject getUserInfo() {
+    public UsersVo getUserInfo() {
         return getUserInfoWithRetry(0);
     }
 
     @Override
-    public Result<Boolean> updateUserInfo(UserRequestObject request) {
+    public Result<Boolean> updateUserInfo(UsersDto request) {
         long userId = StpUtil.getLoginIdAsLong();
         Users users = UserConverter.INSTANCE.requestObjectToEntity(request);
         users.setId(userId);
@@ -232,7 +232,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     }
 
     // 获取用户信息，最多执行三次递归
-    private UserResponseObject getUserInfoWithRetry(int retryTimes) {
+    private UsersVo getUserInfoWithRetry(int retryTimes) {
         if (retryTimes > MAX_RETRY_TIMES) {
             throw new RuntimeException("获取用户信息失败，请稍后再试或联系管理员！");
         }

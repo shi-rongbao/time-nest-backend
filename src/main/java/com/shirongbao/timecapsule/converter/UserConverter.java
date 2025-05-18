@@ -1,8 +1,8 @@
 package com.shirongbao.timecapsule.converter;
 
 import com.shirongbao.timecapsule.pojo.entity.Users;
-import com.shirongbao.timecapsule.pojo.request.UserRequestObject;
-import com.shirongbao.timecapsule.pojo.response.UserResponseObject;
+import com.shirongbao.timecapsule.pojo.request.UsersDto;
+import com.shirongbao.timecapsule.pojo.response.UsersVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -16,7 +16,7 @@ public interface UserConverter {
 
     UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
 
-    UserResponseObject entityToResponseObject(Users users);
+    UsersVo entityToResponseObject(Users users);
 
-    Users requestObjectToEntity(UserRequestObject request);
+    Users requestObjectToEntity(UsersDto request);
 }

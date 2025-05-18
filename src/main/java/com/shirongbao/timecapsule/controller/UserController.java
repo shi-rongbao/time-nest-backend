@@ -1,8 +1,8 @@
 package com.shirongbao.timecapsule.controller;
 
 import com.shirongbao.timecapsule.common.Result;
-import com.shirongbao.timecapsule.pojo.request.UserRequestObject;
-import com.shirongbao.timecapsule.pojo.response.UserResponseObject;
+import com.shirongbao.timecapsule.pojo.request.UsersDto;
+import com.shirongbao.timecapsule.pojo.response.UsersVo;
 import com.shirongbao.timecapsule.service.EmailService;
 import com.shirongbao.timecapsule.service.UserService;
 import com.shirongbao.timecapsule.validation.RegisterValidation;
@@ -30,7 +30,7 @@ public class UserController {
 
     // 注册
     @PostMapping("/register")
-    public Result<String> register(@RequestBody @Validated(RegisterValidation.class) UserRequestObject request) {
+    public Result<String> register(@RequestBody @Validated(RegisterValidation.class) UsersDto request) {
         return userService.register(request);
     }
 
@@ -42,7 +42,7 @@ public class UserController {
 
     // 登录
     @PostMapping("/login")
-    public Result<String> login(@RequestBody @Validated UserRequestObject request) {
+    public Result<String> login(@RequestBody @Validated UsersDto request) {
         String token = userService.login(request);
         if (StringUtils.isBlank(token)) {
             return Result.fail("用户名或密码输入错误！");
@@ -65,13 +65,13 @@ public class UserController {
 
     // 获取用户基本信息
     @GetMapping("/getUserInfo")
-    public Result<UserResponseObject> getUserInfo() {
+    public Result<UsersVo> getUserInfo() {
         return Result.success(userService.getUserInfo());
     }
 
     // 修改基本信息
     @PostMapping("/updateUserInfo")
-    public Result<Boolean> updateUserInfo(@RequestBody UserRequestObject request) {
+    public Result<Boolean> updateUserInfo(@RequestBody UsersDto request) {
         return userService.updateUserInfo(request);
     }
 

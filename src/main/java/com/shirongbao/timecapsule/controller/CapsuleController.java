@@ -1,8 +1,17 @@
 package com.shirongbao.timecapsule.controller;
 
+import com.shirongbao.timecapsule.common.Result;
+import com.shirongbao.timecapsule.converter.CapsuleConverter;
+import com.shirongbao.timecapsule.pojo.bo.CapsuleBo;
+import com.shirongbao.timecapsule.pojo.entity.Capsule;
+import com.shirongbao.timecapsule.pojo.response.CapsuleVo;
+import com.shirongbao.timecapsule.service.CapsuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -13,4 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/capsule")
 @RequiredArgsConstructor
 public class CapsuleController {
+
+    private final CapsuleService capsuleService;
+
+    // 查询“我”快要解锁的capsule列表（最多4个）
+    @GetMapping("/queryMyUnlockingCapsuleList")
+    public Result<List<CapsuleVo>> queryMyUnlockingCapsuleList() {
+        try {
+            List<CapsuleBo> capsuleBoList = capsuleService.queryMyUnlockingCapsuleList();
+            List<CapsuleVo> capsuleVoList = CapsuleConverter.INSTANCE.capsuleBoListToCapsuleVoList(capsuleBoList);
+            return Result.success(capsuleVoList);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
 }

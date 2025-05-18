@@ -3,8 +3,8 @@ package com.shirongbao.timecapsule.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timecapsule.common.Result;
 import com.shirongbao.timecapsule.pojo.entity.Users;
-import com.shirongbao.timecapsule.pojo.request.UserRequestObject;
-import com.shirongbao.timecapsule.pojo.response.UserResponseObject;
+import com.shirongbao.timecapsule.pojo.request.UsersDto;
+import com.shirongbao.timecapsule.pojo.response.UsersVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,19 +18,19 @@ import java.util.List;
 public interface UserService  extends IService<Users> {
 
     // 注册
-    Result<String> register(UserRequestObject request);
+    Result<String> register(UsersDto request);
 
     // 登录
-    String login(UserRequestObject request);
+    String login(UsersDto request);
 
     // 用户上传头像
     Result<String> uploadAvatar(MultipartFile file) throws IOException;
 
     // 获取用户信息
-    UserResponseObject getUserInfo();
+    UsersVo getUserInfo();
 
     // 修改用户信息
-    Result<Boolean> updateUserInfo(UserRequestObject request);
+    Result<Boolean> updateUserInfo(UsersDto request);
 
     // 登出
     void logout();
