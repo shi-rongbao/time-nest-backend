@@ -2,7 +2,7 @@ package com.shirongbao.timecapsule.converter;
 
 import com.shirongbao.timecapsule.pojo.bo.CapsuleBo;
 import com.shirongbao.timecapsule.pojo.entity.Capsule;
-import com.shirongbao.timecapsule.pojo.response.CapsuleVo;
+import com.shirongbao.timecapsule.pojo.vo.CapsuleVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

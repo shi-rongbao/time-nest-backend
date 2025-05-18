@@ -1,8 +1,8 @@
 package com.shirongbao.timecapsule.converter;
 
 import com.shirongbao.timecapsule.pojo.entity.Users;
-import com.shirongbao.timecapsule.pojo.request.UsersDto;
-import com.shirongbao.timecapsule.pojo.response.UsersVo;
+import com.shirongbao.timecapsule.pojo.dto.UsersDto;
+import com.shirongbao.timecapsule.pojo.vo.UsersVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -3,8 +3,8 @@ package com.shirongbao.timecapsule.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timecapsule.common.Result;
 import com.shirongbao.timecapsule.pojo.entity.Users;
-import com.shirongbao.timecapsule.pojo.request.UsersDto;
-import com.shirongbao.timecapsule.pojo.response.UsersVo;
+import com.shirongbao.timecapsule.pojo.dto.UsersDto;
+import com.shirongbao.timecapsule.pojo.vo.UsersVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

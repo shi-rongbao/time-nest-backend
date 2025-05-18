@@ -3,13 +3,10 @@ package com.shirongbao.timecapsule.controller;
 import com.shirongbao.timecapsule.common.Result;
 import com.shirongbao.timecapsule.converter.CapsuleConverter;
 import com.shirongbao.timecapsule.pojo.bo.CapsuleBo;
-import com.shirongbao.timecapsule.pojo.entity.Capsule;
-import com.shirongbao.timecapsule.pojo.response.CapsuleVo;
+import com.shirongbao.timecapsule.pojo.vo.CapsuleVo;
 import com.shirongbao.timecapsule.service.CapsuleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

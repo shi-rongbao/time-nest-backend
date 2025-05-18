@@ -1,8 +1,8 @@
 package com.shirongbao.timecapsule.controller;
 
 import com.shirongbao.timecapsule.common.Result;
-import com.shirongbao.timecapsule.pojo.request.UsersDto;
-import com.shirongbao.timecapsule.pojo.response.UsersVo;
+import com.shirongbao.timecapsule.pojo.dto.UsersDto;
+import com.shirongbao.timecapsule.pojo.vo.UsersVo;
 import com.shirongbao.timecapsule.service.EmailService;
 import com.shirongbao.timecapsule.service.UserService;
 import com.shirongbao.timecapsule.validation.RegisterValidation;

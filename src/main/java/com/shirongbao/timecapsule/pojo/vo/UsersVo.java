@@ -1,4 +1,4 @@
-package com.shirongbao.timecapsule.pojo.response;
+package com.shirongbao.timecapsule.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

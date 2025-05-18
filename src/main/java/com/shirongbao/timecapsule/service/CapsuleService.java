@@ -3,7 +3,6 @@ package com.shirongbao.timecapsule.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timecapsule.pojo.bo.CapsuleBo;
 import com.shirongbao.timecapsule.pojo.entity.Capsule;
-import com.shirongbao.timecapsule.pojo.response.CapsuleVo;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.shirongbao.timecapsule.pojo.request;
+package com.shirongbao.timecapsule.pojo.dto;
 
 import com.shirongbao.timecapsule.validation.RegisterValidation;
 import jakarta.validation.constraints.NotBlank;
