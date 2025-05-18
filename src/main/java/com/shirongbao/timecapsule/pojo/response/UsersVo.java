@@ -8,10 +8,10 @@ import java.util.Date;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description: 用户信息返回对象
+ * @description: 用户vo类
  */
 @Data
-public class UserResponseObject {
+public class UsersVo {
 
     // 唯一不重复用户名
     private String userAccount;

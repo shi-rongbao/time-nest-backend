@@ -8,10 +8,10 @@ import lombok.Data;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description: 入参用户请求实体类
+ * @description: 用户dto类
  */
 @Data
-public class UserRequestObject {
+public class UsersDto {
 
     @NotBlank(message = "账号不能为空")
     @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]{5,18}$", message = "用户名不符合格式要求！")
