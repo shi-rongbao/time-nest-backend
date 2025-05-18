@@ -3,7 +3,7 @@ package com.shirongbao.timecapsule.common.constant;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: redis常量前缀统一管理类
  */
 public class RedisConstant {
 

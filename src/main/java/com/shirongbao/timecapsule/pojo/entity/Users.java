@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: 用户实体类
  */
 @Data
 public class Users {

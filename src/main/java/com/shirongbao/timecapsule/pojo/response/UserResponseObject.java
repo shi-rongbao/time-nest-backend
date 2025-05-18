@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description:
+ * @description: 用户信息返回对象
  */
 @Data
 public class UserResponseObject {

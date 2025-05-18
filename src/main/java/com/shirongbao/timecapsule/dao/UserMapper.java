@@ -6,7 +6,7 @@ import com.shirongbao.timecapsule.pojo.entity.Users;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: 用户持久层接口
  */
 public interface UserMapper extends BaseMapper<Users> {
 

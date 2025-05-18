@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: 操作redis工具类
  */
 @Component
 @RequiredArgsConstructor

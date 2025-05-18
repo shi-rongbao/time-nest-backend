@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * @author: ShiRongbao
  * @date: 2025-04-17
- * @description:
+ * @description: 注销申请状态枚举
  */
 @Getter
 public enum DeactivationRequestedEnum {

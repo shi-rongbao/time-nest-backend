@@ -2,6 +2,11 @@ package com.shirongbao.timecapsule.utils;
 
 import java.util.Random;
 
+/**
+ * @author: ShiRongbao
+ * @date: 2025-05-15
+ * @description: 验证码工具类
+ */
 public class VerificationCodeUtil {
 
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

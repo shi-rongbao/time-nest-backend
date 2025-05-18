@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description:
+ * @description: oss bean配置类
  */
 @Configuration
 @RequiredArgsConstructor

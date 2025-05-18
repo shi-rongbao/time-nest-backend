@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description:
+ * @description: oss配置类
  */
 @ConfigurationProperties(prefix = "aliyun.oss")
 @Component

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-17
- * @description:
+ * @description: 用户注销定时任务类
  */
 @Component
 @RequiredArgsConstructor

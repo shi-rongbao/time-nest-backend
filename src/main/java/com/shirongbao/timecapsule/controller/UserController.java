@@ -1,6 +1,5 @@
 package com.shirongbao.timecapsule.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.shirongbao.timecapsule.common.Result;
 import com.shirongbao.timecapsule.pojo.request.UserRequestObject;
 import com.shirongbao.timecapsule.pojo.response.UserResponseObject;
@@ -18,7 +17,7 @@ import java.io.IOException;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: 用户接口控制器
  */
 @RestController()
 @RequestMapping("/user")

@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: 时间胶囊程序主启动类
  */
 @SpringBootApplication
 @MapperScan("com.shirongbao.timecapsule.dao")

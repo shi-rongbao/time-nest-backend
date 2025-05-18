@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description:
+ * @description: oss服务接口
  */
 public interface OssService {
 

@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description:
+ * @description: 用户转换器
  */
 @Mapper
 public interface UserConverter {

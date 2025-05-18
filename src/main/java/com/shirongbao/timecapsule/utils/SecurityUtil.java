@@ -1,9 +1,7 @@
 package com.shirongbao.timecapsule.utils;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.KeyGenerator;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +11,7 @@ import java.security.SecureRandom;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description: 安全工具类，用于加密和解密密码和手机号。
+ * @description: 安全工具类，用于加密密码和加密，解密手机号。
  */
 public class SecurityUtil {
 

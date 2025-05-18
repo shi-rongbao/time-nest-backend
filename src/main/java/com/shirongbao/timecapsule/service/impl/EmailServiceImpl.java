@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-15
- * @description:
+ * @description: 邮箱服务实现类
  */
 @Service("emailService")
 @RequiredArgsConstructor

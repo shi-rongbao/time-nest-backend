@@ -16,7 +16,7 @@ import java.io.InputStream;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
- * @description:
+ * @description: oss服务实现类
  */
 @Service("ossService")
 @RequiredArgsConstructor
