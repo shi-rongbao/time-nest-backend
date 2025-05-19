@@ -3,20 +3,13 @@ package com.shirongbao.timenest.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.enums.FriendRequestNotificationIsReadEnum;
-import com.shirongbao.timenest.common.enums.IsDeletedEnum;
-import com.shirongbao.timenest.common.enums.StatusEnum;
 import com.shirongbao.timenest.dao.FriendRequestNotificationMapper;
-import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
-import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.service.FriendRequestNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author: ShiRongbao

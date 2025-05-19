@@ -1,7 +1,6 @@
 package com.shirongbao.timenest.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
 
 import java.util.List;
