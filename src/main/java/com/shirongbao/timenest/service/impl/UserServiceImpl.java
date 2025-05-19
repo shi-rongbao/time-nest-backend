@@ -114,6 +114,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         users.setEmail(email);
         users.setPassword(encryptPassword);
         users.setUserAccount(userAccount);
+        // 设置默认的头像
+        users.setAvatarUrl("https://time-capsule-rongbao.oss-rg-china-mainland.aliyuncs.com/avatar/1c829f2997583dbe2f8338c1b5499da4.jpg");
         save(users);
         return Result.success("注册成功！");
     }
