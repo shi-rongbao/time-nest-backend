@@ -16,4 +16,6 @@ public interface FriendshipsService extends IService<Friendships> {
     // 查看当前用户好友列表
     List<Friendships> getFriendList(long currentUserId) throws ExecutionException, InterruptedException;
 
+    // 检查当前用户是否是我的好友
+    boolean checkIsFriend(Long id);
 }

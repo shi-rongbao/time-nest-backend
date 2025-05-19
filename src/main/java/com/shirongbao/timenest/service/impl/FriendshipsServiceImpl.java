@@ -1,6 +1,8 @@
 package com.shirongbao.timenest.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.dao.FriendshipsMapper;
@@ -52,5 +54,19 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
         friendshipsList1.addAll(friendshipsList2);
 
         return friendshipsList1;
+    }
+
+    @Override
+    public boolean checkIsFriend(Long id) {
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        QueryWrapper<Friendships> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_deleted", 0)
+                .and(w -> w
+                        .and(w1 -> w1.eq("user_id1", id).eq("user_id2", currentUserId))
+                        .or(w2 -> w2.eq("user_id1", currentUserId).eq("user_id2", id))
+                );
+
+        Friendships relation = getOne(wrapper);
+        return relation != null;
     }
 }

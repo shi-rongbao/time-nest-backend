@@ -264,6 +264,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             throw new RuntimeException("当前用户账号异常，添加失败~");
         }
 
+        // 要先判断这个用户是否是我的好友
+        boolean isFriend = friendshipsService.checkIsFriend(users.getId());
+        if (isFriend) {
+            throw new RuntimeException("你们已经是好友啦，不需要再添加了~");
+        }
+
         Long receiverUserId = users.getId();
         long senderUserId = StpUtil.getLoginIdAsLong();
 
