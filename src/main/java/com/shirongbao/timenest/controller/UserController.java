@@ -2,11 +2,13 @@ package com.shirongbao.timenest.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.converter.FriendshipsConverter;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.pojo.dto.FriendRequestsDto;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
+import com.shirongbao.timenest.pojo.vo.FriendRequestNotificationVo;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
 import com.shirongbao.timenest.service.EmailService;
 import com.shirongbao.timenest.service.FriendRequestNotificationService;
@@ -105,19 +107,20 @@ public class UserController {
 
     // 获取未读通知
     @GetMapping("/getUnreadNotifications")
-    public Result<List<FriendRequestNotification>> getUnreadNotifications() {
+    public Result<List<FriendRequestNotificationVo>> getUnreadNotifications() {
         try {
             long currentUserId = StpUtil.getLoginIdAsLong();
             List<FriendRequestNotification> friendRequestNotificationList = friendRequestNotificationService.getUnreadNotifications(currentUserId);
-            return Result.success(friendRequestNotificationList);
+            List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationListToFriendRequestNotificationVoList(friendRequestNotificationList);
+            return Result.success(friendRequestNotificationVoList);
         } catch (Exception e) {
             return Result.fail(e.getMessage());
         }
     }
 
     // 标记为已读
-    @PostMapping("/markAsRead")
-    public Result<Boolean> markAsRead(@RequestParam Long noticeId) {
+    @GetMapping("/markAsRead")
+    public Result<Boolean> markAsRead(@RequestParam("noticeId") Long noticeId) {
         try {
             // 点击消息后将消息标记为已读
             friendRequestNotificationService.markAsRead(noticeId);
