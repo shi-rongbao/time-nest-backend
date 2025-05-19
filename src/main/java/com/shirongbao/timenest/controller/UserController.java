@@ -1,11 +1,14 @@
 package com.shirongbao.timenest.controller;
 
 import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.converter.UserConverter;
+import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
 import com.shirongbao.timenest.service.EmailService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.validation.RegisterValidation;
+import com.shirongbao.timenest.validation.SentFriendRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -80,6 +83,17 @@ public class UserController {
     public Result<Boolean> deactivateRequest() {
         userService.deactivateRequest();
         return Result.success(true);
+    }
+
+    // 发送好友申请
+    @PostMapping("/sendFriendRequest")
+    public Result<String> sendFriendRequest(@RequestBody @Validated({SentFriendRequest.class}) UsersDto usersDto) {
+        try {
+            UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
+            return userService.sendFriendRequest(usersBo);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
     }
 
 }

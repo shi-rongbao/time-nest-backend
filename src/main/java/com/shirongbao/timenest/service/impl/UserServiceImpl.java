@@ -9,11 +9,16 @@ import com.shirongbao.timenest.common.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.DeactivationRequestedEnum;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
+import com.shirongbao.timenest.common.enums.ProcessingStatusEnum;
+import com.shirongbao.timenest.common.enums.StatusEnum;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
+import com.shirongbao.timenest.pojo.bo.UsersBo;
+import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
+import com.shirongbao.timenest.service.FriendRequestsService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.utils.RedisUtil;
@@ -46,6 +51,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private final RedisUtil redisUtil;
 
     private final OssService ossService;
+
+    private final FriendRequestsService friendRequestsService;
 
     @Override
     public Result<String> register(UsersDto request) {
@@ -229,6 +236,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             users.setIsDeleted(IsDeletedEnum.DELETED.getCode());
         }
         updateBatchById(usersList);
+    }
+
+    @Override
+    public Result<String> sendFriendRequest(UsersBo usersBo) {
+        String userAccount = usersBo.getUserAccount();
+        LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Users::getUserAccount, userAccount);
+        wrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        wrapper.eq(Users::getStatus, StatusEnum.NORMAL.getCode());
+        Users users = getOne(wrapper);
+        if (ObjectUtils.isEmpty(users)) {
+            throw new RuntimeException("当前用户账号异常，添加失败~");
+        }
+
+        Long receiverUserId = users.getId();
+        long senderUserId = StpUtil.getLoginIdAsLong();
+
+        // 记录好友请求表
+        FriendRequests friendRequests = new FriendRequests();
+        friendRequests.setSenderUserId(senderUserId);
+        friendRequests.setReceiverUserId(receiverUserId);
+        friendRequests.setRequestMessage(usersBo.getRequestMessage());
+
+        // 查询是否已经有未处理的请求
+        LambdaQueryWrapper<FriendRequests> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FriendRequests::getSenderUserId, senderUserId);
+        queryWrapper.eq(FriendRequests::getReceiverUserId, receiverUserId);
+        queryWrapper.eq(FriendRequests::getProcessingStatus, ProcessingStatusEnum.WAITING.getCode());
+        queryWrapper.eq(FriendRequests::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        FriendRequests one = friendRequestsService.getOne(queryWrapper);
+        if (ObjectUtils.isNotEmpty(one)) {
+            return Result.success("当前已发送过好友申请,请勿再次发送!");
+        }
+
+        friendRequestsService.save(friendRequests);
+        return Result.success();
     }
 
     // 获取用户信息，最多执行三次递归

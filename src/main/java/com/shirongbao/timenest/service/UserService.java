@@ -2,6 +2,7 @@ package com.shirongbao.timenest.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
@@ -43,4 +44,7 @@ public interface UserService  extends IService<Users> {
 
     // 逻辑删除注销的用户
     void doLogicDelete(List<Users> usersList);
+
+    // 发送好友请求
+    Result<String> sendFriendRequest(UsersBo usersBo);
 }

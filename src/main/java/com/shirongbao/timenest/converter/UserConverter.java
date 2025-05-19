@@ -1,5 +1,6 @@
 package com.shirongbao.timenest.converter;
 
+import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
@@ -19,4 +20,6 @@ public interface UserConverter {
     UsersVo entityToResponseObject(Users users);
 
     Users requestObjectToEntity(UsersDto request);
+
+    UsersBo usersDtoToUsersBo(UsersDto usersDto);
 }

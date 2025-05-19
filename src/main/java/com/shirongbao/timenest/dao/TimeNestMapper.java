@@ -6,7 +6,7 @@ import com.shirongbao.timenest.pojo.entity.TimeNest;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-18
- * @description:
+ * @description: 拾光纪持久层接口
  */
 public interface TimeNestMapper extends BaseMapper<TimeNest> {
 }
