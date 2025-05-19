@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.shirongbao</groupId>
-    <artifactId>time-nest</artifactId>
+    <artifactId>time-timeNest</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
