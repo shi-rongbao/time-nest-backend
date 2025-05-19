@@ -42,6 +42,17 @@ public class UserController {
 
     private final FriendRequestNotificationService friendRequestNotificationService;
 
+
+    // 校验token是否有效
+    @GetMapping("/validateToken")
+    public Result<Boolean> validateToken() {
+        try {
+            return Result.success(StpUtil.isLogin());
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
     // 注册
     @PostMapping("/register")
     public Result<String> register(@RequestBody @Validated(RegisterValidation.class) UsersDto request) {
