@@ -7,14 +7,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
-import com.shirongbao.timenest.common.enums.DeactivationRequestedEnum;
-import com.shirongbao.timenest.common.enums.IsDeletedEnum;
-import com.shirongbao.timenest.common.enums.ProcessingStatusEnum;
-import com.shirongbao.timenest.common.enums.StatusEnum;
+import com.shirongbao.timenest.common.enums.*;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
+import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
@@ -56,6 +54,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private final FriendRequestsService friendRequestsService;
 
     private final FriendRequestNotificationService friendRequestNotificationService;
+
+    private final FriendshipsServiceImpl friendshipsService;
 
     @Override
     public Result<String> register(UsersDto request) {
@@ -277,6 +277,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
         // 记录通知表
         friendRequestNotificationService.saveNotification(friendRequests.getId(), receiverUserId);
+        return Result.success();
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> processingFriendRequest(Long friendRequestId, Integer processingResult) {
+        LambdaQueryWrapper<FriendRequests> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FriendRequests::getId, friendRequestId);
+        queryWrapper.eq(FriendRequests::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        FriendRequests friendRequests = friendRequestsService.getOne(queryWrapper);
+        if (ObjectUtils.isEmpty(friendRequests)) {
+            throw new RuntimeException("当前好友请求不存在，请刷新后重试！");
+        }
+
+        friendRequests.setProcessingStatus(ProcessingStatusEnum.PASSING.getCode());
+        friendRequests.setProcessingResult(ProcessingResultEnum.REFUSE.getCode());
+
+        if (processingResult == ProcessingResultEnum.ACCEPT.getCode()) {
+            friendRequests.setProcessingResult(ProcessingResultEnum.ACCEPT.getCode());
+
+            // 往好友表里插入数据
+            Friendships friendships = new Friendships();
+            Long user1Id = friendRequests.getSenderUserId();
+            friendships.setUserId1(user1Id);
+            Long user2Id = friendRequests.getReceiverUserId();
+            friendships.setUserId2(user2Id);
+
+            Users users1 = getById(user1Id);
+            Users users2 = getById(user2Id);
+
+            friendships.setUserAccount1(users1.getUserAccount());
+            friendships.setUserAccount2(users2.getUserAccount());
+            friendshipsService.save(friendships);
+        }
+
+        friendRequestsService.updateById(friendRequests);
         return Result.success();
     }
 

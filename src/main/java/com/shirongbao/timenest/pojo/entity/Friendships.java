@@ -9,37 +9,38 @@ import java.util.Date;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-19
- * @description: 好友请求实体类
+ * @description: 好友关系表
  */
 @Data
-public class FriendRequests {
+public class Friendships {
 
     // 主键id
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    // 发送请求的用户id
-    private Long senderUserId;
+    // 用户一的id
+    private Long userId1;
 
-    // 接收请求的用户id
-    private Long receiverUserId;
+    // 用户一的账号
+    private String userAccount1;
 
-    // 请求信息
-    private String requestMessage;
+    // 用户二的id
+    private Long userId2;
 
-    // 处理状态：1-已处理；0-未处理
-    private Integer processingStatus;
-
-    // 处理结果：1-接受；0-拒绝
-    private Integer processingResult;
+    // 用户二的账号
+    private String userAccount2;
 
     // 逻辑删除：1-已删除；0-未删除
     private Integer isDeleted;
+
+    // 建立好友的日期
+    private Date establishedAt;
 
     // 创建时间
     private Date createdAt;
 
     // 更新时间
-    private Date updatedAt;
+    private Date updateAt;
 
 }
+

@@ -3,6 +3,7 @@ package com.shirongbao.timenest.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.shirongbao.timenest.common.Result;
 import com.shirongbao.timenest.converter.UserConverter;
+import com.shirongbao.timenest.pojo.dto.FriendRequestsDto;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
@@ -121,6 +122,18 @@ public class UserController {
             // 点击消息后将消息标记为已读
             friendRequestNotificationService.markAsRead(noticeId);
             return Result.success(true);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
+    // 接受/拒绝好友申请(处理好友申请)
+    @PostMapping("/processingFriendRequest")
+    public Result<Boolean> processingFriendRequest(@RequestBody @Validated FriendRequestsDto friendRequestsDto) {
+        try {
+            Long friendRequestId = friendRequestsDto.getFriendRequestId();
+            Integer processingResult = friendRequestsDto.getProcessingResult();
+            return userService.processingFriendRequest(friendRequestId, processingResult);
         } catch (Exception e) {
             return Result.fail(e.getMessage());
         }

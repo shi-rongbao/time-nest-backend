@@ -47,4 +47,7 @@ public interface UserService  extends IService<Users> {
 
     // 发送好友请求
     Result<String> sendFriendRequest(UsersBo usersBo);
+
+    // 处理好友申请
+    Result<Boolean> processingFriendRequest(Long friendRequestId, Integer processingResult);
 }
