@@ -8,9 +8,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.*;
+import com.shirongbao.timenest.converter.FriendshipsConverter;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
+import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
+import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
@@ -33,13 +36,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
  * @author: ShiRongbao
@@ -284,7 +285,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         friendRequestsService.save(friendRequests);
 
         // 记录通知表
-        friendRequestNotificationService.saveNotification(friendRequests.getId(), receiverUserId);
+        friendRequestNotificationService.saveNotification(friendRequests.getId(), receiverUserId, senderUserId);
         return Result.success();
     }
 
@@ -370,6 +371,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
         // 执行完就可以返回了
         return usersVoList;
+    }
+
+    @Override
+    public List<FriendRequestNotificationBo> combineUserAccount(List<FriendRequestNotification> friendRequestNotificationList) {
+        // 拿到未读通知中所有的发请求的用户id
+        List<Long> sendUserIdList = friendRequestNotificationList.stream().map(FriendRequestNotification::getSenderUserId).collect(Collectors.toList());
+        // 批量查询到全部用户
+        LambdaQueryWrapper<Users> usersWrapper = new LambdaQueryWrapper<>();
+        usersWrapper.in(Users::getId, sendUserIdList);
+        usersWrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        usersWrapper.eq(Users::getStatus, StatusEnum.NORMAL.getCode());
+        List<Users> usersList = list(usersWrapper);
+        // 转成map，key是usersId，value是userAccount
+        Map<Long, String> userAccountMap = usersList.stream().collect(Collectors.toMap(Users::getId, Users::getUserAccount));
+
+        // 转换后组装userAccount
+        List<FriendRequestNotificationBo> friendRequestNotificationBoList = FriendshipsConverter.INSTANCE.friendRequestNotificationListToFriendRequestNotificationBoList(friendRequestNotificationList);
+
+        for (FriendRequestNotificationBo friendRequestNotificationBo : friendRequestNotificationBoList) {
+            friendRequestNotificationBo.setRequestUserAccount(userAccountMap.get(friendRequestNotificationBo.getSenderUserId()));
+        }
+
+        return friendRequestNotificationBoList;
     }
 
     // 获取用户信息，最多执行三次递归

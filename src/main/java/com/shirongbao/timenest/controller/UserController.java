@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.shirongbao.timenest.common.Result;
 import com.shirongbao.timenest.converter.FriendshipsConverter;
 import com.shirongbao.timenest.converter.UserConverter;
+import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.dto.FriendRequestsDto;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -111,7 +113,12 @@ public class UserController {
         try {
             long currentUserId = StpUtil.getLoginIdAsLong();
             List<FriendRequestNotification> friendRequestNotificationList = friendRequestNotificationService.getUnreadNotifications(currentUserId);
-            List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationListToFriendRequestNotificationVoList(friendRequestNotificationList);
+            if (friendRequestNotificationList.isEmpty()) {
+                return Result.success(new ArrayList<>());
+            }
+            // 组装userAccount
+            List<FriendRequestNotificationBo> friendRequestNotificationBoList = userService.combineUserAccount(friendRequestNotificationList);
+            List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationBoListToFriendRequestNotificationVoList(friendRequestNotificationBoList);
             return Result.success(friendRequestNotificationVoList);
         } catch (Exception e) {
             return Result.fail(e.getMessage());

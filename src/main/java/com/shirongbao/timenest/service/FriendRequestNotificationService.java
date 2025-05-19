@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface FriendRequestNotificationService extends IService<FriendRequestNotification> {
 
     // 保存好友申请记录通知
-    void saveNotification(Long friendRequestId, Long noticeUserId);
+    void saveNotification(Long friendRequestId, Long noticeUserId, Long senderUserId);
 
     // 获取未读消息
     List<FriendRequestNotification> getUnreadNotifications(Long noticeUserId);

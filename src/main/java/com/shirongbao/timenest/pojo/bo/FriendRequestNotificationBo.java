@@ -1,6 +1,7 @@
-package com.shirongbao.timenest.pojo.vo;
+package com.shirongbao.timenest.pojo.bo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -8,18 +9,22 @@ import java.util.Date;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-19
- * @description: 好友请求通知vo类
+ * @description: 好友请求提醒bo类
  */
 @Data
-public class FriendRequestNotificationVo {
+public class FriendRequestNotificationBo {
 
     // 主键id
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     // 要通知的用户id
     private Long noticeUserId;
 
-    // 请求用户账号
+    // 发送请求的用户id
+    private Long senderUserId;
+
+    // 发送请求的用户账号
     private String requestUserAccount;
 
     // 好友申请表id
@@ -29,7 +34,6 @@ public class FriendRequestNotificationVo {
     private Integer isRead;
 
     // 创建时间
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdAt;
 
 }

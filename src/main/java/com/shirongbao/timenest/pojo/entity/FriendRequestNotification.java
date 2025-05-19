@@ -21,6 +21,9 @@ public class FriendRequestNotification {
     // 要通知的用户id
     private Long noticeUserId;
 
+    // 发送请求的用户id
+    private Long senderUserId;
+
     // 好友申请表id
     private Long friendRequestsId;
 
