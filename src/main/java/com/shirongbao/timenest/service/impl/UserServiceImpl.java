@@ -18,6 +18,7 @@ import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
+import com.shirongbao.timenest.service.FriendRequestNotificationService;
 import com.shirongbao.timenest.service.FriendRequestsService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
@@ -53,6 +54,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private final OssService ossService;
 
     private final FriendRequestsService friendRequestsService;
+
+    private final FriendRequestNotificationService friendRequestNotificationService;
 
     @Override
     public Result<String> register(UsersDto request) {
@@ -271,6 +274,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         }
 
         friendRequestsService.save(friendRequests);
+
+        // 记录通知表
+        friendRequestNotificationService.saveNotification(friendRequests.getId(), receiverUserId);
         return Result.success();
     }
 

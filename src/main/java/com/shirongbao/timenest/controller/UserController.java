@@ -1,11 +1,14 @@
 package com.shirongbao.timenest.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.shirongbao.timenest.common.Result;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
+import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
 import com.shirongbao.timenest.service.EmailService;
+import com.shirongbao.timenest.service.FriendRequestNotificationService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.validation.RegisterValidation;
 import com.shirongbao.timenest.validation.SentFriendRequest;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -30,6 +34,8 @@ public class UserController {
     private final UserService userService;
 
     private final EmailService emailService;
+
+    private final FriendRequestNotificationService friendRequestNotificationService;
 
     // 注册
     @PostMapping("/register")
@@ -91,6 +97,30 @@ public class UserController {
         try {
             UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
             return userService.sendFriendRequest(usersBo);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
+    // 获取未读通知
+    @GetMapping("/getUnreadNotifications")
+    public Result<List<FriendRequestNotification>> getUnreadNotifications() {
+        try {
+            long currentUserId = StpUtil.getLoginIdAsLong();
+            List<FriendRequestNotification> friendRequestNotificationList = friendRequestNotificationService.getUnreadNotifications(currentUserId);
+            return Result.success(friendRequestNotificationList);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
+    // 标记为已读
+    @PostMapping("/markAsRead")
+    public Result<Boolean> markAsRead(@RequestParam Long noticeId) {
+        try {
+            // 点击消息后将消息标记为已读
+            friendRequestNotificationService.markAsRead(noticeId);
+            return Result.success(true);
         } catch (Exception e) {
             return Result.fail(e.getMessage());
         }
