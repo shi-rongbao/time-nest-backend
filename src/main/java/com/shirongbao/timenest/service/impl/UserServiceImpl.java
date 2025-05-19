@@ -18,6 +18,7 @@ import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
 import com.shirongbao.timenest.service.FriendRequestNotificationService;
 import com.shirongbao.timenest.service.FriendRequestsService;
+import com.shirongbao.timenest.service.FriendshipsService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.utils.RedisUtil;
@@ -32,8 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author: ShiRongbao
@@ -55,7 +61,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
     private final FriendRequestNotificationService friendRequestNotificationService;
 
-    private final FriendshipsServiceImpl friendshipsService;
+    private final FriendshipsService friendshipsService;
+
+    private final ThreadPoolExecutor labelThreadPool;
 
     @Override
     public Result<String> register(UsersDto request) {
@@ -314,6 +322,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
         friendRequestsService.updateById(friendRequests);
         return Result.success();
+    }
+
+    @Override
+    public List<UsersVo> getFriendList() throws ExecutionException, InterruptedException {
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        List<Friendships> friendshipsList = friendshipsService.getFriendList(currentUserId);
+        if (friendshipsList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<UsersVo> usersVoList = new ArrayList<>();
+
+        // 拿到所有的futures
+        List<CompletableFuture<List<UsersVo>>> futures = new ArrayList<>();
+        for (Friendships friendships : friendshipsList) {
+            // 异步去执行
+            CompletableFuture<List<UsersVo>> future = CompletableFuture.supplyAsync(() -> {
+                UsersVo usersVo = new UsersVo();
+                String userAccount;
+                Long userId;
+                // 这里是拿到好友的账号
+                if (friendships.getUserId1() == currentUserId) {
+                     userAccount = friendships.getUserAccount2();
+                     userId = friendships.getUserId2();
+                } else {
+                    userAccount = friendships.getUserAccount1();
+                    userId = friendships.getUserId1();
+                }
+                usersVo.setUserAccount(userAccount);
+                // 拿到好友的信息并返回
+                Users friendUser = getById(userId);
+                usersVo.setUserAccount(userAccount);
+                usersVo.setNickName(friendUser.getNickName());
+                usersVo.setAvatarUrl(friendUser.getAvatarUrl());
+                usersVo.setIntroduce(friendUser.getIntroduce());
+                usersVoList.add(usersVo);
+                return usersVoList;
+            }, labelThreadPool);
+
+            futures.add(future);
+        }
+
+        // 等待所有任务完成
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allFutures.join();
+
+        // 执行完就可以返回了
+        return usersVoList;
     }
 
     // 获取用户信息，最多执行三次递归

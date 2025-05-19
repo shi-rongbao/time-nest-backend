@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author: ShiRongbao
@@ -50,4 +51,8 @@ public interface UserService  extends IService<Users> {
 
     // 处理好友申请
     Result<Boolean> processingFriendRequest(Long friendRequestId, Integer processingResult);
+
+    // 查看好友列表
+    List<UsersVo> getFriendList() throws ExecutionException, InterruptedException;
+
 }

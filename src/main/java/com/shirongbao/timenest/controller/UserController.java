@@ -139,4 +139,15 @@ public class UserController {
         }
     }
 
+    // 查看好友列表
+    @GetMapping("/getFriendList")
+    public Result<List<UsersVo>> getFriendList() {
+        try {
+            List<UsersVo> friendList = userService.getFriendList();
+            return Result.success(friendList);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
 }
