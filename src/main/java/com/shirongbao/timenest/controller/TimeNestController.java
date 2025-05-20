@@ -29,25 +29,17 @@ public class TimeNestController {
     // 查询“我”快要解锁的拾光纪条目列表（最多4个）
     @GetMapping("/queryMyUnlockingNestList")
     public Result<List<TimeNestVo>> queryMyUnlockingNestList() {
-        try {
-            List<TimeNestBo> timeNestBoList = timeNestService.queryMyUnlockingNestList();
-            List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.tineNestBoListToTimeNestVoList(timeNestBoList);
-            return Result.success(timeNestVoList);
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+        List<TimeNestBo> timeNestBoList = timeNestService.queryMyUnlockingNestList();
+        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.tineNestBoListToTimeNestVoList(timeNestBoList);
+        return Result.success(timeNestVoList);
     }
 
     // 提前解锁nest
     @PostMapping("/unlockNest")
     public Result<Boolean> unlockNest(@RequestBody @Validated(UnlockNestValidation.class) TimeNestDto timeNestDto) {
-        try {
-            Long nestId = timeNestDto.getId();
-            timeNestService.unlockNest(nestId);
-            return Result.success();
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+        Long nestId = timeNestDto.getId();
+        timeNestService.unlockNest(nestId);
+        return Result.success();
     }
 
     // 创建nest

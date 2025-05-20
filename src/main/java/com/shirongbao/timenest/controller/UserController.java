@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author: ShiRongbao
@@ -46,11 +47,7 @@ public class UserController {
     // 校验token是否有效
     @GetMapping("/validateToken")
     public Result<Boolean> validateToken() {
-        try {
-            return Result.success(StpUtil.isLogin());
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+        return Result.success(StpUtil.isLogin());
     }
 
     // 注册
@@ -110,65 +107,45 @@ public class UserController {
     // 发送好友申请
     @PostMapping("/sendFriendRequest")
     public Result<String> sendFriendRequest(@RequestBody @Validated({SentFriendRequest.class}) UsersDto usersDto) {
-        try {
-            UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
-            return userService.sendFriendRequest(usersBo);
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+        UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
+        return userService.sendFriendRequest(usersBo);
     }
 
     // 获取未读通知
     @GetMapping("/getUnreadNotifications")
     public Result<List<FriendRequestNotificationVo>> getUnreadNotifications() {
-        try {
-            long currentUserId = StpUtil.getLoginIdAsLong();
-            List<FriendRequestNotification> friendRequestNotificationList = friendRequestNotificationService.getUnreadNotifications(currentUserId);
-            if (friendRequestNotificationList.isEmpty()) {
-                return Result.success(new ArrayList<>());
-            }
-            // 组装userAccount
-            List<FriendRequestNotificationBo> friendRequestNotificationBoList = userService.combineUserAccount(friendRequestNotificationList);
-            List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationBoListToFriendRequestNotificationVoList(friendRequestNotificationBoList);
-            return Result.success(friendRequestNotificationVoList);
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        List<FriendRequestNotification> friendRequestNotificationList = friendRequestNotificationService.getUnreadNotifications(currentUserId);
+        if (friendRequestNotificationList.isEmpty()) {
+            return Result.success(new ArrayList<>());
         }
+        // 组装userAccount
+        List<FriendRequestNotificationBo> friendRequestNotificationBoList = userService.combineUserAccount(friendRequestNotificationList);
+        List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationBoListToFriendRequestNotificationVoList(friendRequestNotificationBoList);
+        return Result.success(friendRequestNotificationVoList);
     }
 
     // 标记为已读
     @GetMapping("/markAsRead")
     public Result<Boolean> markAsRead(@RequestParam("noticeId") Long noticeId) {
-        try {
-            // 点击消息后将消息标记为已读
-            friendRequestNotificationService.markAsRead(noticeId);
-            return Result.success(true);
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+        // 点击消息后将消息标记为已读
+        friendRequestNotificationService.markAsRead(noticeId);
+        return Result.success(true);
     }
 
     // 接受/拒绝好友申请(处理好友申请)
     @PostMapping("/processingFriendRequest")
     public Result<Boolean> processingFriendRequest(@RequestBody @Validated FriendRequestsDto friendRequestsDto) {
-        try {
-            Long friendRequestId = friendRequestsDto.getFriendRequestId();
-            Integer processingResult = friendRequestsDto.getProcessingResult();
-            return userService.processingFriendRequest(friendRequestId, processingResult);
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+        Long friendRequestId = friendRequestsDto.getFriendRequestId();
+        Integer processingResult = friendRequestsDto.getProcessingResult();
+        return userService.processingFriendRequest(friendRequestId, processingResult);
     }
 
     // 查看好友列表
     @GetMapping("/getFriendList")
-    public Result<List<UsersVo>> getFriendList() {
-        try {
-            List<UsersVo> friendList = userService.getFriendList();
-            return Result.success(friendList);
-        } catch (Exception e) {
-            return Result.fail(e.getMessage());
-        }
+    public Result<List<UsersVo>> getFriendList() throws ExecutionException, InterruptedException {
+        List<UsersVo> friendList = userService.getFriendList();
+        return Result.success(friendList);
     }
 
 }
