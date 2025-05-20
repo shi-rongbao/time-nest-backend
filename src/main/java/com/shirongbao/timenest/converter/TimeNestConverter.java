@@ -21,6 +21,8 @@ public interface TimeNestConverter {
 
     TimeNestVo timeNestToTimeNestVo(TimeNest timeNest);
 
+    TimeNestVo timeNestBoToTimeNestVo(TimeNestBo timeNestBo);
+
     List<TimeNestVo> tineNestBoListToTimeNestVoList(List<TimeNestBo> timeNestBoList);
 
     List<TimeNestBo> tineNestListToTimeNestBoList(List<TimeNest> timeNestList);

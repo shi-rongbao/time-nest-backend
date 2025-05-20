@@ -52,7 +52,7 @@ public class TimeNestController {
 
     // 创建nest
     @PostMapping("/createTimeNest")
-    public Result createTimeNest(@RequestBody @Validated(CreateNestValidation.class) TimeNestDto timeNestDto) {
+    public Result<Boolean> createTimeNest(@RequestBody @Validated(CreateNestValidation.class) TimeNestDto timeNestDto) {
         TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestDtoToTimeNestBo(timeNestDto);
         timeNestService.createTimeNest(timeNestBo);
         return Result.success();
