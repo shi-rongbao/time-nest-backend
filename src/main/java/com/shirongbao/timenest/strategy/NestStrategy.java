@@ -1,6 +1,5 @@
 package com.shirongbao.timenest.strategy;
 
-import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 
 /**
@@ -17,5 +16,5 @@ public interface NestStrategy {
     void unlockTimeNest(TimeNest timeNest);
 
     // 创建拾光纪条目
-    TimeNest createTimeNest(TimeNestBo timeNestBo);
+    TimeNest createTimeNest(TimeNest timeNest);
 }

@@ -12,10 +12,10 @@ import java.io.IOException;
  * @date: 2025-05-16
  * @description: 测试接口控制器
  */
-@RequestMapping("/test")
+@RequestMapping("/oss")
 @RestController
 @RequiredArgsConstructor
-public class TestOssController {
+public class OssController {
 
     private final OssService ossService;
 

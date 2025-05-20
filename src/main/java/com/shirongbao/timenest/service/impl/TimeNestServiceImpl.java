@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
@@ -18,9 +19,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author: ShiRongbao
@@ -90,10 +94,42 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
 
     @Override
     public void createTimeNest(TimeNestBo timeNestBo) {
+        TimeNest timeNest = TimeNestConverter.INSTANCE.timeNestBoToTimeNest(timeNestBo);
+        timeNest.setUserId(StpUtil.getLoginIdAsLong());
+
+        // 设置共同发布好友id
+        List<Long> friendIdList = timeNestBo.getFriendIdList();
+        if (CollectionUtils.isEmpty(friendIdList)) {
+            friendIdList = new ArrayList<>();
+        }
+        friendIdList = friendIdList.stream().sorted().collect(Collectors.toList());
+        String friendIds = JSON.toJSONString(friendIdList);
+        timeNest.setFriendIds(friendIds);
+
+        // 设置解锁通知用户id
+        List<Long> unlockToUserIdList = timeNestBo.getUnlockToUserIdList();
+        if (CollectionUtils.isEmpty(unlockToUserIdList)) {
+            unlockToUserIdList = new ArrayList<>();
+        }
+        // 邀请好友默认也会通知
+        List<Long> mergedList = Stream.concat(friendIdList.stream(), unlockToUserIdList.stream())
+                .distinct()
+                .sorted()
+                .toList();
+
+        // 如果没有选择解锁人，默认自己和好友都解锁
+        unlockToUserIdList.add(StpUtil.getLoginIdAsLong());
+        unlockToUserIdList.addAll(mergedList);
+        // 去重
+        unlockToUserIdList = unlockToUserIdList.stream().distinct().sorted().collect(Collectors.toList());
+        String unlockToUserIds = JSON.toJSONString(unlockToUserIdList);
+        timeNest.setUnlockToUserIds(unlockToUserIds);
+        timeNest.setUnlockedStatus(UnlockedStatusEnum.LOCK.getCode());
+
+        // 执行对应的策略,完成个性化的创建
         Integer nestType = timeNestBo.getNestType();
         NestStrategy strategy = nestStrategyFactory.getStrategy(nestType);
-        TimeNest timeNest = strategy.createTimeNest(timeNestBo);
-        timeNest.setUserId(StpUtil.getLoginIdAsLong());
+        timeNest = strategy.createTimeNest(timeNest);
         save(timeNest);
     }
 

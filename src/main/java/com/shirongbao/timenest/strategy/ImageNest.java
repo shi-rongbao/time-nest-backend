@@ -1,7 +1,6 @@
 package com.shirongbao.timenest.strategy;
 
 import com.shirongbao.timenest.common.enums.NestTypeEnum;
-import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,7 @@ public class ImageNest implements NestStrategy {
     }
 
     @Override
-    public TimeNest createTimeNest(TimeNestBo timeNestBo) {
+    public TimeNest createTimeNest(TimeNest timeNest) {
         return null;
     }
 
