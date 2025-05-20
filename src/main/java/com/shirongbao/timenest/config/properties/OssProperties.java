@@ -26,4 +26,6 @@ public class OssProperties {
 
     private String avatar;
 
+    private String nest;
+
 }

@@ -11,7 +11,9 @@ import com.shirongbao.timenest.validation.UnlockNestValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -48,6 +50,13 @@ public class TimeNestController {
         TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestDtoToTimeNestBo(timeNestDto);
         timeNestService.createTimeNest(timeNestBo);
         return Result.success();
+    }
+
+    // 上传图片nest
+    @PostMapping("/uploadImageNest")
+    public Result<String> uploadImageNest(@RequestParam("file") MultipartFile file) throws IOException {
+        String imageUrl = timeNestService.uploadImageNest(file);
+        return Result.success(imageUrl);
     }
 
 }

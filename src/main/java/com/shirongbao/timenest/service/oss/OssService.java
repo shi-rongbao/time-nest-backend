@@ -13,4 +13,6 @@ public interface OssService {
 
     String uploadAvatar(MultipartFile file) throws IOException;
 
+    // 上传图片nest
+    String uploadImageNest(MultipartFile file) throws IOException;
 }

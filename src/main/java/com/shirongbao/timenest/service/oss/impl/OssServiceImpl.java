@@ -31,6 +31,11 @@ public class OssServiceImpl implements OssService {
         return uploadFile(file, ossProperties.getAvatar());
     }
 
+    @Override
+    public String uploadImageNest(MultipartFile file) throws IOException{
+        return uploadFile(file, ossProperties.getNest());
+    }
+
     // 上传文件,到指定文件夹下
     private String uploadFile(MultipartFile file, String path) throws IOException {
         String originalFilename = file.getOriginalFilename();

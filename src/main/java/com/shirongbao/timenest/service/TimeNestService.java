@@ -3,7 +3,9 @@ package com.shirongbao.timenest.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -21,4 +23,7 @@ public interface TimeNestService extends IService<TimeNest> {
 
     // 创建拾光纪条目
     void createTimeNest(TimeNestBo timeNestBo);
+
+    // 上传图片nest
+    String uploadImageNest(MultipartFile file) throws IOException;
 }
