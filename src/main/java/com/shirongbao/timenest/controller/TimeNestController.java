@@ -6,6 +6,7 @@ import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
 import com.shirongbao.timenest.service.TimeNestService;
+import com.shirongbao.timenest.validation.CreateNestValidation;
 import com.shirongbao.timenest.validation.UnlockNestValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -51,7 +52,7 @@ public class TimeNestController {
 
     // 创建nest
     @PostMapping("/createTimeNest")
-    public Result createTimeNest(@RequestBody @Validated TimeNestDto timeNestDto) {
+    public Result createTimeNest(@RequestBody @Validated(CreateNestValidation.class) TimeNestDto timeNestDto) {
         TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestDtoToTimeNestBo(timeNestDto);
         timeNestService.createTimeNest(timeNestBo);
         return Result.success();

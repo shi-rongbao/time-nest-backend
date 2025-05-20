@@ -93,6 +93,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         Integer nestType = timeNestBo.getNestType();
         NestStrategy strategy = nestStrategyFactory.getStrategy(nestType);
         TimeNest timeNest = strategy.createTimeNest(timeNestBo);
+        timeNest.setUserId(StpUtil.getLoginIdAsLong());
         save(timeNest);
     }
 
