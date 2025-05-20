@@ -25,6 +25,9 @@ public class TimeNestDto {
     @NotNull(message = "nest类型不能为空", groups = {CreateNestValidation.class})
     private Integer nestType;
 
+    // 要发送用户的邮箱（邮件类型使用）
+    private String toEmail;
+
     // 拾光纪条目标题
     @NotBlank(message = "nest标题不能为空", groups = {CreateNestValidation.class})
     private String nestTitle;
