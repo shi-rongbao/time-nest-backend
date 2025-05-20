@@ -43,7 +43,6 @@ public class UserController {
 
     private final FriendRequestNotificationService friendRequestNotificationService;
 
-
     // 校验token是否有效
     @GetMapping("/validateToken")
     public Result<Boolean> validateToken() {
