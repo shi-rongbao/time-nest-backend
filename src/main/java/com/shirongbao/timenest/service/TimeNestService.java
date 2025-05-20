@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-18
- * @description:
+ * @description: 拾光纪服务接口
  */
 public interface TimeNestService extends IService<TimeNest> {
 
@@ -18,4 +18,7 @@ public interface TimeNestService extends IService<TimeNest> {
 
     // 解锁nest
     void unlockNest(Long nestId);
+
+    // 创建拾光纪条目
+    void createTimeNest(TimeNestBo timeNestBo);
 }

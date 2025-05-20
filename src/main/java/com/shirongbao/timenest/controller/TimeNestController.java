@@ -6,6 +6,7 @@ import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
 import com.shirongbao.timenest.service.TimeNestService;
+import com.shirongbao.timenest.validation.UnlockNestValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class TimeNestController {
 
     // 提前解锁nest
     @PostMapping("/unlockNest")
-    public Result<Boolean> unlockNest(@RequestBody @Validated TimeNestDto timeNestDto) {
+    public Result<Boolean> unlockNest(@RequestBody @Validated(UnlockNestValidation.class) TimeNestDto timeNestDto) {
         try {
             Long nestId = timeNestDto.getId();
             timeNestService.unlockNest(nestId);
@@ -46,6 +47,14 @@ public class TimeNestController {
         } catch (Exception e) {
             return Result.fail(e.getMessage());
         }
+    }
+
+    // 创建nest
+    @PostMapping("/createTimeNest")
+    public Result createTimeNest(@RequestBody @Validated TimeNestDto timeNestDto) {
+        TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestDtoToTimeNestBo(timeNestDto);
+        timeNestService.createTimeNest(timeNestBo);
+        return Result.success();
     }
 
 }

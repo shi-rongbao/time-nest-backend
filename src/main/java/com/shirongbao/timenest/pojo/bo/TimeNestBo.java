@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -32,6 +33,12 @@ public class TimeNestBo {
 
     // 是否公开：1-公开；0-私密
     private Integer publicStatus;
+
+    // 邀请共同创建好友id
+    private List<Long> friendIdList;
+
+    // 解锁通知谁看(入参List类型)
+    private List<Long> unlockToUserIdList;
 
     // 是否解锁：1-已解锁；0-未解锁
     private Integer unlockedStatus;

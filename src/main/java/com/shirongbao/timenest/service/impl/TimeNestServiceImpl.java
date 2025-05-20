@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-18
- * @description:
+ * @description: 拾光纪服务实现类
  */
 @Service("timeNestService")
 @RequiredArgsConstructor
@@ -85,7 +85,15 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         // 根据不同的type，执行不同的策略
         Integer capsuleType = timeNest.getNestType();
         NestStrategy strategy = nestStrategyFactory.getStrategy(capsuleType);
-        strategy.unlockNest(timeNest);
+        strategy.unlockTimeNest(timeNest);
+    }
+
+    @Override
+    public void createTimeNest(TimeNestBo timeNestBo) {
+        Integer nestType = timeNestBo.getNestType();
+        NestStrategy strategy = nestStrategyFactory.getStrategy(nestType);
+        TimeNest timeNest = strategy.createTimeNest(timeNestBo);
+        save(timeNest);
     }
 
 }

@@ -36,6 +36,9 @@ public class TimeNest {
     // 是否解锁：1-已解锁；0-未解锁
     private Integer unlockedStatus;
 
+    // 邀请一起创建的好友id
+    private String friendIds;
+
     // 解锁后提醒谁看
     private String unlockToUserIds;
 

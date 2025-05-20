@@ -1,5 +1,6 @@
 package com.shirongbao.timenest.strategy;
 
+import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 
 /**
@@ -9,7 +10,12 @@ import com.shirongbao.timenest.pojo.entity.TimeNest;
  */
 public interface NestStrategy {
 
+    // 获取nest类型
     int getCode();
 
-    void unlockNest(TimeNest timeNest);
+    // 解锁拾光纪条目
+    void unlockTimeNest(TimeNest timeNest);
+
+    // 创建拾光纪条目
+    TimeNest createTimeNest(TimeNestBo timeNestBo);
 }

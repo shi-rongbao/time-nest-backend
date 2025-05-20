@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.converter;
 
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
+import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
 import org.mapstruct.Mapper;
@@ -23,4 +24,8 @@ public interface TimeNestConverter {
     List<TimeNestVo> tineNestBoListToTimeNestVoList(List<TimeNestBo> timeNestBoList);
 
     List<TimeNestBo> tineNestListToTimeNestBoList(List<TimeNest> timeNestList);
+
+    TimeNestBo timeNestDtoToTimeNestBo(TimeNestDto timeNestDto);
+
+    TimeNest timeNestBoToTimeNest(TimeNestBo timeNestBo);
 }

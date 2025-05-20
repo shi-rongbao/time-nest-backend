@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.strategy;
 
 import com.shirongbao.timenest.common.enums.NestTypeEnum;
+import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +19,13 @@ public class MailNest implements NestStrategy {
     }
 
     @Override
-    public void unlockNest(TimeNest timeNest) {
+    public void unlockTimeNest(TimeNest timeNest) {
         // todo 发送邮件
+    }
+
+    @Override
+    public TimeNest createTimeNest(TimeNestBo timeNestBo) {
+        return null;
     }
 
 }
