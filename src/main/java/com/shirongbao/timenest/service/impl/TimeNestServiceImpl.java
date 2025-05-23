@@ -82,7 +82,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     public void unlockNest(Long nestId) {
         // 先拿到这个nest
         TimeNest timeNest = getById(nestId);
-        if (timeNest == null || timeNest.getUserId() != StpUtil.getLoginIdAsLong()) {
+        if (timeNest == null) {
             throw new RuntimeException("当前数据异常，请稍后再试！");
         }
 
