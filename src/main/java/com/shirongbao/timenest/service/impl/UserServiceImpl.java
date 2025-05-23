@@ -362,6 +362,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
                 usersVo.setUserAccount(userAccount);
                 // 拿到好友的信息并返回
                 Users friendUser = getById(userId);
+                usersVo.setId(userId);
                 usersVo.setUserAccount(userAccount);
                 usersVo.setNickName(friendUser.getNickName());
                 usersVo.setAvatarUrl(friendUser.getAvatarUrl());

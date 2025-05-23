@@ -13,6 +13,9 @@ import java.util.Date;
 @Data
 public class UsersVo {
 
+    // 主键id
+    private Long id;
+
     // 唯一不重复用户名
     private String userAccount;
 
