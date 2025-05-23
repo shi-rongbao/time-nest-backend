@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
-import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
+import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
@@ -58,5 +58,5 @@ public interface UserService  extends IService<Users> {
     List<UsersVo> getFriendList() throws ExecutionException, InterruptedException;
 
     // 获取未读通知(组装userAccount)
-    List<FriendRequestNotificationBo> combineUserAccount(List<FriendRequestNotification> friendRequestNotificationList);
+    List<FriendRequestNotificationBo> combineUserAccount(List<Notification> notificationList);
 }

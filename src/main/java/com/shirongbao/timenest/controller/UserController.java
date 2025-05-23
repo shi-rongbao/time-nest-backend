@@ -8,11 +8,11 @@ import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.dto.FriendRequestsDto;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
-import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
+import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.vo.FriendRequestNotificationVo;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
 import com.shirongbao.timenest.service.EmailService;
-import com.shirongbao.timenest.service.FriendRequestNotificationService;
+import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.validation.RegisterValidation;
 import com.shirongbao.timenest.validation.SentFriendRequest;
@@ -41,7 +41,7 @@ public class UserController {
 
     private final EmailService emailService;
 
-    private final FriendRequestNotificationService friendRequestNotificationService;
+    private final NotificationService notificationService;
 
     // 校验token是否有效
     @GetMapping("/validateToken")
@@ -114,12 +114,12 @@ public class UserController {
     @GetMapping("/getUnreadNotifications")
     public Result<List<FriendRequestNotificationVo>> getUnreadNotifications() {
         long currentUserId = StpUtil.getLoginIdAsLong();
-        List<FriendRequestNotification> friendRequestNotificationList = friendRequestNotificationService.getUnreadNotifications(currentUserId);
-        if (friendRequestNotificationList.isEmpty()) {
+        List<Notification> notificationList = notificationService.getUnreadNotifications(currentUserId);
+        if (notificationList.isEmpty()) {
             return Result.success(new ArrayList<>());
         }
         // 组装userAccount
-        List<FriendRequestNotificationBo> friendRequestNotificationBoList = userService.combineUserAccount(friendRequestNotificationList);
+        List<FriendRequestNotificationBo> friendRequestNotificationBoList = userService.combineUserAccount(notificationList);
         List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationBoListToFriendRequestNotificationVoList(friendRequestNotificationBoList);
         return Result.success(friendRequestNotificationVoList);
     }
@@ -128,7 +128,7 @@ public class UserController {
     @GetMapping("/markAsRead")
     public Result<Boolean> markAsRead(@RequestParam("noticeId") Long noticeId) {
         // 点击消息后将消息标记为已读
-        friendRequestNotificationService.markAsRead(noticeId);
+        notificationService.markAsRead(noticeId);
         return Result.success(true);
     }
 

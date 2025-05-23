@@ -13,13 +13,13 @@ import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
 import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
-import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
+import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
-import com.shirongbao.timenest.service.FriendRequestNotificationService;
+import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.FriendRequestsService;
 import com.shirongbao.timenest.service.FriendshipsService;
 import com.shirongbao.timenest.service.UserService;
@@ -60,7 +60,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
     private final FriendRequestsService friendRequestsService;
 
-    private final FriendRequestNotificationService friendRequestNotificationService;
+    private final NotificationService notificationService;
 
     private final FriendshipsService friendshipsService;
 
@@ -293,7 +293,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         friendRequestsService.save(friendRequests);
 
         // 记录通知表
-        friendRequestNotificationService.saveNotification(friendRequests.getId(), receiverUserId, senderUserId);
+        notificationService.saveNotification(friendRequests.getId(), receiverUserId, senderUserId);
         return Result.success();
     }
 
@@ -383,9 +383,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     }
 
     @Override
-    public List<FriendRequestNotificationBo> combineUserAccount(List<FriendRequestNotification> friendRequestNotificationList) {
+    public List<FriendRequestNotificationBo> combineUserAccount(List<Notification> notificationList) {
         // 拿到未读通知中所有的发请求的用户id
-        List<Long> sendUserIdList = friendRequestNotificationList.stream().map(FriendRequestNotification::getSenderUserId).collect(Collectors.toList());
+        List<Long> sendUserIdList = notificationList.stream().map(Notification::getNoticeId).collect(Collectors.toList());
         // 批量查询到全部用户
         LambdaQueryWrapper<Users> usersWrapper = new LambdaQueryWrapper<>();
         usersWrapper.in(Users::getId, sendUserIdList);
@@ -396,7 +396,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         Map<Long, String> userAccountMap = usersList.stream().collect(Collectors.toMap(Users::getId, Users::getUserAccount));
 
         // 转换后组装userAccount
-        List<FriendRequestNotificationBo> friendRequestNotificationBoList = FriendshipsConverter.INSTANCE.friendRequestNotificationListToFriendRequestNotificationBoList(friendRequestNotificationList);
+        List<FriendRequestNotificationBo> friendRequestNotificationBoList = FriendshipsConverter.INSTANCE.friendRequestNotificationListToFriendRequestNotificationBoList(notificationList);
 
         for (FriendRequestNotificationBo friendRequestNotificationBo : friendRequestNotificationBoList) {
             friendRequestNotificationBo.setRequestUserAccount(userAccountMap.get(friendRequestNotificationBo.getSenderUserId()));

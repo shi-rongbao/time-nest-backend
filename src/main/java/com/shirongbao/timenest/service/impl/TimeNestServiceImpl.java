@@ -2,6 +2,7 @@ package com.shirongbao.timenest.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,6 +15,7 @@ import com.shirongbao.timenest.dao.TimeNestMapper;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
+import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.TimeNestService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.strategy.NestStrategy;
@@ -43,6 +45,8 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     private final NestStrategyFactory nestStrategyFactory;
 
     private final OssService ossService;
+
+    private final NotificationService notificationService;
 
     @Override
     public List<TimeNestBo> queryMyUnlockingNestList() {
@@ -97,6 +101,16 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         Integer capsuleType = timeNest.getNestType();
         NestStrategy strategy = nestStrategyFactory.getStrategy(capsuleType);
         strategy.unlockTimeNest(timeNest);
+
+        // 获取通知好友列表
+        String unlockToUserIds = timeNest.getUnlockToUserIds();
+        List<Long> userIdList = JSON.parseObject(unlockToUserIds, new TypeReference<List<Long>>() {});
+        if (CollectionUtils.isEmpty(userIdList)) {
+            return;
+        }
+
+        // 记录解锁通知
+        notificationService.recordUnlockNotice(userIdList, nestId);
     }
 
     @Override

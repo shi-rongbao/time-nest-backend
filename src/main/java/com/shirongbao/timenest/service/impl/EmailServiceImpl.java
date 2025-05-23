@@ -58,4 +58,16 @@ public class EmailServiceImpl implements EmailService {
         return Result.success("验证码已发送");
     }
 
+    @Override
+    public void sendTimeNestEmail(String toEmail, String nestTitle, String nestContent) {
+        // 发送验证码
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("2502260933@qq.com");
+        message.setTo(toEmail);
+        message.setSubject("拾光纪：[" + nestTitle + "]");
+        message.setText(nestContent);
+
+        mailSender.send(message);
+    }
+
 }

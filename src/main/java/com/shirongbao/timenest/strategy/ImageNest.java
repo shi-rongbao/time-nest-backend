@@ -20,7 +20,7 @@ public class ImageNest implements NestStrategy {
 
     @Override
     public void unlockTimeNest(TimeNest timeNest) {
-        // todo 图片好像不用有特殊操作！
+        // do nothing
     }
 
     @Override

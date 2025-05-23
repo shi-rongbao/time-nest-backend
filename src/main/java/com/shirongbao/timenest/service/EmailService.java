@@ -12,4 +12,6 @@ public interface EmailService {
     // 发送验证码
     Result<String> sendEmailCode(String email);
 
+    // 发送拾光纪邮件
+    void sendTimeNestEmail(String toEmail, String nestTitle, String nestContent);
 }

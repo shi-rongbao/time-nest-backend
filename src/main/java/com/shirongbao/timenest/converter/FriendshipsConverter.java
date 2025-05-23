@@ -1,7 +1,7 @@
 package com.shirongbao.timenest.converter;
 
 import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
-import com.shirongbao.timenest.pojo.entity.FriendRequestNotification;
+import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.vo.FriendRequestNotificationVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -18,9 +18,9 @@ public interface FriendshipsConverter {
 
     FriendshipsConverter INSTANCE = Mappers.getMapper(FriendshipsConverter.class);
 
-    List<FriendRequestNotificationVo> friendRequestNotificationListToFriendRequestNotificationVoList(List<FriendRequestNotification> friendRequestNotificationList);
+    List<FriendRequestNotificationVo> friendRequestNotificationListToFriendRequestNotificationVoList(List<Notification> notificationList);
 
     List<FriendRequestNotificationVo> friendRequestNotificationBoListToFriendRequestNotificationVoList(List<FriendRequestNotificationBo> friendRequestNotificationBoList);
 
-    List<FriendRequestNotificationBo> friendRequestNotificationListToFriendRequestNotificationBoList(List<FriendRequestNotification> friendRequestNotificationList);
+    List<FriendRequestNotificationBo> friendRequestNotificationListToFriendRequestNotificationBoList(List<Notification> notificationList);
 }

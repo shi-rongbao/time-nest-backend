@@ -2,6 +2,8 @@ package com.shirongbao.timenest.strategy;
 
 import com.shirongbao.timenest.common.enums.NestTypeEnum;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
+import com.shirongbao.timenest.service.EmailService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +13,10 @@ import org.springframework.stereotype.Component;
  * @description: 邮件nest
  */
 @Component
+@RequiredArgsConstructor
 public class MailNest implements NestStrategy {
+
+    private final EmailService emailService;
 
     @Override
     public int getCode() {
@@ -20,7 +25,7 @@ public class MailNest implements NestStrategy {
 
     @Override
     public void unlockTimeNest(TimeNest timeNest) {
-        // todo 发送邮件
+        emailService.sendTimeNestEmail(timeNest.getToEmail(), timeNest.getNestTitle(), timeNest.getNestContent());
     }
 
     @Override
