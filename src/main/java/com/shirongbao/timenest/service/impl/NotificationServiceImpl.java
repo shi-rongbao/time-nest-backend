@@ -40,6 +40,7 @@ public class NotificationServiceImpl extends ServiceImpl<FriendRequestNotificati
         wrapper.eq(Notification::getIsRead, NotificationIsReadEnum.NOT_READ.getCode());
         wrapper.eq(Notification::getNoticeUserId, noticeUserId);
         wrapper.orderByDesc(Notification::getCreatedAt);
+        wrapper.last("limit 6");
         return list(wrapper);
     }
 
