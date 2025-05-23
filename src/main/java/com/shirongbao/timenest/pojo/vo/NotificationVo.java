@@ -11,7 +11,7 @@ import java.util.Date;
  * @description: 好友请求通知vo类
  */
 @Data
-public class FriendRequestNotificationVo {
+public class NotificationVo {
 
     // 主键id
     private Long id;
@@ -21,6 +21,9 @@ public class FriendRequestNotificationVo {
 
     // 请求用户账号
     private String requestUserAccount;
+
+    // 拾光纪的标题
+    private String timeNestTitle;
 
     // 好友申请表id
     private Long friendRequestsId;

@@ -12,7 +12,7 @@ import java.util.Date;
  * @description: 好友请求提醒bo类
  */
 @Data
-public class FriendRequestNotificationBo {
+public class NotificationBo {
 
     // 主键id
     @TableId(value = "id", type = IdType.AUTO)
@@ -21,11 +21,17 @@ public class FriendRequestNotificationBo {
     // 要通知的用户id
     private Long noticeUserId;
 
-    // 发送请求的用户id
-    private Long senderUserId;
+    // 发送通知的id（type=1：好友用户id：type=2：拾光纪id）
+    private Long noticeId;
+
+    // 通知类型：1-好友请求通知；2-拾光纪解锁通知
+    private Integer noticeType;
 
     // 发送请求的用户账号
     private String requestUserAccount;
+
+    // 拾光纪的标题
+    private String timeNestTitle;
 
     // 好友申请表id
     private Long friendRequestsId;

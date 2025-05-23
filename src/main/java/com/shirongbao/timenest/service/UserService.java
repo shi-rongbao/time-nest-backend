@@ -2,7 +2,7 @@ package com.shirongbao.timenest.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.common.entity.Result;
-import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
+import com.shirongbao.timenest.pojo.bo.NotificationBo;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.entity.Users;
@@ -48,15 +48,4 @@ public interface UserService  extends IService<Users> {
     // 逻辑删除注销的用户
     void doLogicDelete(List<Users> usersList);
 
-    // 发送好友请求
-    Result<String> sendFriendRequest(UsersBo usersBo);
-
-    // 处理好友申请
-    Result<Boolean> processingFriendRequest(Long friendRequestId, Integer processingResult);
-
-    // 查看好友列表
-    List<UsersVo> getFriendList() throws ExecutionException, InterruptedException;
-
-    // 获取未读通知(组装userAccount)
-    List<FriendRequestNotificationBo> combineUserAccount(List<Notification> notificationList);
 }

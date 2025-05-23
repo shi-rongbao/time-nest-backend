@@ -23,4 +23,5 @@ public interface NotificationService extends IService<Notification> {
 
     // 记录解锁通知
     void recordUnlockNotice(List<Long> userIdList, Long noticeId);
+
 }

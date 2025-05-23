@@ -2,16 +2,18 @@ package com.shirongbao.timenest.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.shirongbao.timenest.common.entity.Result;
-import com.shirongbao.timenest.converter.FriendshipsConverter;
+import com.shirongbao.timenest.converter.NotificationConverter;
 import com.shirongbao.timenest.converter.UserConverter;
-import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
+import com.shirongbao.timenest.domain.NotificationDomainService;
+import com.shirongbao.timenest.pojo.bo.NotificationBo;
 import com.shirongbao.timenest.pojo.dto.FriendRequestsDto;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.entity.Notification;
-import com.shirongbao.timenest.pojo.vo.FriendRequestNotificationVo;
+import com.shirongbao.timenest.pojo.vo.NotificationVo;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
 import com.shirongbao.timenest.service.EmailService;
+import com.shirongbao.timenest.service.FriendshipsService;
 import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.validation.RegisterValidation;
@@ -42,6 +44,10 @@ public class UserController {
     private final EmailService emailService;
 
     private final NotificationService notificationService;
+
+    private final FriendshipsService friendshipsService;
+
+    private final NotificationDomainService notificationDomainService;
 
     // 校验token是否有效
     @GetMapping("/validateToken")
@@ -107,21 +113,21 @@ public class UserController {
     @PostMapping("/sendFriendRequest")
     public Result<String> sendFriendRequest(@RequestBody @Validated({SentFriendRequest.class}) UsersDto usersDto) {
         UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
-        return userService.sendFriendRequest(usersBo);
+        return friendshipsService.sendFriendRequest(usersBo);
     }
 
     // 获取未读通知
     @GetMapping("/getUnreadNotifications")
-    public Result<List<FriendRequestNotificationVo>> getUnreadNotifications() {
+    public Result<List<NotificationVo>> getUnreadNotifications() {
         long currentUserId = StpUtil.getLoginIdAsLong();
         List<Notification> notificationList = notificationService.getUnreadNotifications(currentUserId);
         if (notificationList.isEmpty()) {
             return Result.success(new ArrayList<>());
         }
-        // 组装userAccount
-        List<FriendRequestNotificationBo> friendRequestNotificationBoList = userService.combineUserAccount(notificationList);
-        List<FriendRequestNotificationVo> friendRequestNotificationVoList = FriendshipsConverter.INSTANCE.friendRequestNotificationBoListToFriendRequestNotificationVoList(friendRequestNotificationBoList);
-        return Result.success(friendRequestNotificationVoList);
+        // 组装notification
+        List<NotificationBo> notificationBoList = notificationDomainService.combineNotification(notificationList);
+        List<NotificationVo> notificationVoList = NotificationConverter.INSTANCE.notificationBoListToNotificationVoList(notificationBoList);
+        return Result.success(notificationVoList);
     }
 
     // 标记为已读
@@ -137,13 +143,14 @@ public class UserController {
     public Result<Boolean> processingFriendRequest(@RequestBody @Validated FriendRequestsDto friendRequestsDto) {
         Long friendRequestId = friendRequestsDto.getFriendRequestId();
         Integer processingResult = friendRequestsDto.getProcessingResult();
-        return userService.processingFriendRequest(friendRequestId, processingResult);
+        return friendshipsService.processingFriendRequest(friendRequestId, processingResult);
     }
 
     // 查看好友列表
     @GetMapping("/getFriendList")
     public Result<List<UsersVo>> getFriendList() throws ExecutionException, InterruptedException {
-        List<UsersVo> friendList = userService.getFriendList();
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        List<UsersVo> friendList = friendshipsService.getFriendList(currentUserId);
         return Result.success(friendList);
     }
 

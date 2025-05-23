@@ -3,7 +3,7 @@ package com.shirongbao.timenest.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.enums.NotificationIsReadEnum;
-import com.shirongbao.timenest.common.enums.NoticeTypeEnum;
+import com.shirongbao.timenest.common.enums.NotificationTypeEnum;
 import com.shirongbao.timenest.dao.FriendRequestNotificationMapper;
 import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.service.NotificationService;
@@ -19,7 +19,7 @@ import java.util.List;
  * @date: 2025-05-19
  * @description: 好友请求通知服务实现类
  */
-@Service("friendRequestNotificationService")
+@Service("notificationService")
 @RequiredArgsConstructor
 public class NotificationServiceImpl extends ServiceImpl<FriendRequestNotificationMapper, Notification> implements NotificationService {
 
@@ -29,7 +29,7 @@ public class NotificationServiceImpl extends ServiceImpl<FriendRequestNotificati
         notification.setFriendRequestsId(friendRequestId);
         notification.setNoticeUserId(receiverUserId);
         notification.setNoticeId(senderUserId);
-        notification.setNoticeType(NoticeTypeEnum.FRIEND_REQUEST_NOTICE.getCode());
+        notification.setNoticeType(NotificationTypeEnum.FRIEND_REQUEST_NOTICE.getCode());
         save(notification);
     }
 
@@ -59,7 +59,7 @@ public class NotificationServiceImpl extends ServiceImpl<FriendRequestNotificati
             Notification notification = new Notification();
             notification.setNoticeUserId(userId);
             notification.setNoticeId(noticeId);
-            notification.setNoticeType(NoticeTypeEnum.TIME_NEST_NOTICE.getCode());
+            notification.setNoticeType(NotificationTypeEnum.UNLOCK_NOTICE.getCode());
             notification.setIsRead(NotificationIsReadEnum.NOT_READ.getCode());
             notificationList.add(notification);
         }

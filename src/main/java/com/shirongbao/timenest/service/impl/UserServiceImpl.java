@@ -8,18 +8,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.*;
-import com.shirongbao.timenest.converter.FriendshipsConverter;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
-import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;
-import com.shirongbao.timenest.pojo.bo.UsersBo;
-import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
-import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.FriendRequestsService;
 import com.shirongbao.timenest.service.FriendshipsService;
 import com.shirongbao.timenest.service.UserService;
@@ -40,7 +35,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.stream.Collectors;
 
 /**
  * @author: ShiRongbao
@@ -57,14 +51,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private final RedisUtil redisUtil;
 
     private final OssService ossService;
-
-    private final FriendRequestsService friendRequestsService;
-
-    private final NotificationService notificationService;
-
-    private final FriendshipsService friendshipsService;
-
-    private final ThreadPoolExecutor labelThreadPool;
 
     @Override
     public Result<String> register(UsersDto request) {
@@ -250,159 +236,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             users.setIsDeleted(IsDeletedEnum.DELETED.getCode());
         }
         updateBatchById(usersList);
-    }
-
-    @Override
-    public Result<String> sendFriendRequest(UsersBo usersBo) {
-        String userAccount = usersBo.getUserAccount();
-        LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Users::getUserAccount, userAccount);
-        wrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
-        wrapper.eq(Users::getStatus, StatusEnum.NORMAL.getCode());
-        Users users = getOne(wrapper);
-        if (ObjectUtils.isEmpty(users)) {
-            throw new RuntimeException("当前用户账号异常，添加失败~");
-        }
-
-        // 要先判断这个用户是否是我的好友
-        boolean isFriend = friendshipsService.checkIsFriend(users.getId());
-        if (isFriend) {
-            throw new RuntimeException("你们已经是好友啦，不需要再添加了~");
-        }
-
-        Long receiverUserId = users.getId();
-        long senderUserId = StpUtil.getLoginIdAsLong();
-
-        // 记录好友请求表
-        FriendRequests friendRequests = new FriendRequests();
-        friendRequests.setSenderUserId(senderUserId);
-        friendRequests.setReceiverUserId(receiverUserId);
-        friendRequests.setRequestMessage(usersBo.getRequestMessage());
-
-        // 查询是否已经有未处理的请求
-        LambdaQueryWrapper<FriendRequests> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FriendRequests::getSenderUserId, senderUserId);
-        queryWrapper.eq(FriendRequests::getReceiverUserId, receiverUserId);
-        queryWrapper.eq(FriendRequests::getProcessingStatus, ProcessingStatusEnum.WAITING.getCode());
-        queryWrapper.eq(FriendRequests::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
-        FriendRequests one = friendRequestsService.getOne(queryWrapper);
-        if (ObjectUtils.isNotEmpty(one)) {
-            return Result.success("当前已发送过好友申请,请勿再次发送!");
-        }
-
-        friendRequestsService.save(friendRequests);
-
-        // 记录通知表
-        notificationService.saveNotification(friendRequests.getId(), receiverUserId, senderUserId);
-        return Result.success();
-    }
-
-    @Override
-    @Transactional
-    public Result<Boolean> processingFriendRequest(Long friendRequestId, Integer processingResult) {
-        LambdaQueryWrapper<FriendRequests> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FriendRequests::getId, friendRequestId);
-        queryWrapper.eq(FriendRequests::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
-        FriendRequests friendRequests = friendRequestsService.getOne(queryWrapper);
-        if (ObjectUtils.isEmpty(friendRequests)) {
-            throw new RuntimeException("当前好友请求不存在，请刷新后重试！");
-        }
-
-        friendRequests.setProcessingStatus(ProcessingStatusEnum.PASSING.getCode());
-        friendRequests.setProcessingResult(ProcessingResultEnum.REFUSE.getCode());
-
-        if (processingResult == ProcessingResultEnum.ACCEPT.getCode()) {
-            friendRequests.setProcessingResult(ProcessingResultEnum.ACCEPT.getCode());
-
-            // 往好友表里插入数据
-            Friendships friendships = new Friendships();
-            Long user1Id = friendRequests.getSenderUserId();
-            friendships.setUserId1(user1Id);
-            Long user2Id = friendRequests.getReceiverUserId();
-            friendships.setUserId2(user2Id);
-
-            Users users1 = getById(user1Id);
-            Users users2 = getById(user2Id);
-
-            friendships.setUserAccount1(users1.getUserAccount());
-            friendships.setUserAccount2(users2.getUserAccount());
-            friendshipsService.save(friendships);
-        }
-
-        friendRequestsService.updateById(friendRequests);
-        return Result.success();
-    }
-
-    @Override
-    public List<UsersVo> getFriendList() throws ExecutionException, InterruptedException {
-        long currentUserId = StpUtil.getLoginIdAsLong();
-        List<Friendships> friendshipsList = friendshipsService.getFriendList(currentUserId);
-        if (friendshipsList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<UsersVo> usersVoList = new ArrayList<>();
-
-        // 拿到所有的futures
-        List<CompletableFuture<List<UsersVo>>> futures = new ArrayList<>();
-        for (Friendships friendships : friendshipsList) {
-            // 异步去执行
-            CompletableFuture<List<UsersVo>> future = CompletableFuture.supplyAsync(() -> {
-                UsersVo usersVo = new UsersVo();
-                String userAccount;
-                Long userId;
-                // 这里是拿到好友的账号
-                if (friendships.getUserId1() == currentUserId) {
-                     userAccount = friendships.getUserAccount2();
-                     userId = friendships.getUserId2();
-                } else {
-                    userAccount = friendships.getUserAccount1();
-                    userId = friendships.getUserId1();
-                }
-                usersVo.setUserAccount(userAccount);
-                // 拿到好友的信息并返回
-                Users friendUser = getById(userId);
-                usersVo.setId(userId);
-                usersVo.setUserAccount(userAccount);
-                usersVo.setNickName(friendUser.getNickName());
-                usersVo.setAvatarUrl(friendUser.getAvatarUrl());
-                usersVo.setIntroduce(friendUser.getIntroduce());
-                usersVoList.add(usersVo);
-                return usersVoList;
-            }, labelThreadPool);
-
-            futures.add(future);
-        }
-
-        // 等待所有任务完成
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-        allFutures.join();
-
-        // 执行完就可以返回了
-        return usersVoList;
-    }
-
-    @Override
-    public List<FriendRequestNotificationBo> combineUserAccount(List<Notification> notificationList) {
-        // 拿到未读通知中所有的发请求的用户id
-        List<Long> sendUserIdList = notificationList.stream().map(Notification::getNoticeId).collect(Collectors.toList());
-        // 批量查询到全部用户
-        LambdaQueryWrapper<Users> usersWrapper = new LambdaQueryWrapper<>();
-        usersWrapper.in(Users::getId, sendUserIdList);
-        usersWrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
-        usersWrapper.eq(Users::getStatus, StatusEnum.NORMAL.getCode());
-        List<Users> usersList = list(usersWrapper);
-        // 转成map，key是usersId，value是userAccount
-        Map<Long, String> userAccountMap = usersList.stream().collect(Collectors.toMap(Users::getId, Users::getUserAccount));
-
-        // 转换后组装userAccount
-        List<FriendRequestNotificationBo> friendRequestNotificationBoList = FriendshipsConverter.INSTANCE.friendRequestNotificationListToFriendRequestNotificationBoList(notificationList);
-
-        for (FriendRequestNotificationBo friendRequestNotificationBo : friendRequestNotificationBoList) {
-            friendRequestNotificationBo.setRequestUserAccount(userAccountMap.get(friendRequestNotificationBo.getSenderUserId()));
-        }
-
-        return friendRequestNotificationBoList;
     }
 
     // 获取用户信息，最多执行三次递归
