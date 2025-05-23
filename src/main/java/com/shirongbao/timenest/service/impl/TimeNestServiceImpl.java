@@ -3,6 +3,7 @@ package com.shirongbao.timenest.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.PublicStatusEnum;
@@ -11,6 +12,7 @@ import com.shirongbao.timenest.common.enums.UnlockedStatusEnum;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.dao.TimeNestMapper;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
+import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.service.TimeNestService;
 import com.shirongbao.timenest.service.oss.OssService;
@@ -141,6 +143,24 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     @Override
     public String uploadImageNest(MultipartFile file) throws IOException {
         return ossService.uploadImageNest(file);
+    }
+
+    @Override
+    public Page<TimeNest> queryMyTimeNestList(TimeNestDto timeNestDto) {
+        long currentUsersId = StpUtil.getLoginIdAsLong();
+        LambdaQueryWrapper<TimeNest> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(TimeNest::getUserId, currentUsersId);
+        wrapper.eq(TimeNest::getNestStatus, StatusEnum.NORMAL.getCode());
+        wrapper.eq(TimeNest::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        if (timeNestDto.getNestType() != null) {
+            wrapper.eq(TimeNest::getNestType, timeNestDto.getNestType());
+        }
+        if (timeNestDto.getUnlockedStatus() != null) {
+            wrapper.eq(TimeNest::getUnlockedStatus, timeNestDto.getUnlockedStatus());
+        }
+        Page<TimeNest> timeNestPage = new Page<>(timeNestDto.getPageNum(), timeNestDto.getPageSize());
+        // 分页查询
+        return baseMapper.selectPage(timeNestPage, wrapper);
     }
 
 }

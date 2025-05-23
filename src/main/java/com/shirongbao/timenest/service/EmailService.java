@@ -1,6 +1,6 @@
 package com.shirongbao.timenest.service;
 
-import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.common.entity.Result;
 
 /**
  * @author: ShiRongbao

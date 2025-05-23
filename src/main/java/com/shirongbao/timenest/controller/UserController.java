@@ -1,7 +1,7 @@
 package com.shirongbao.timenest.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.converter.FriendshipsConverter;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.pojo.bo.FriendRequestNotificationBo;

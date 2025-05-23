@@ -1,6 +1,6 @@
 package com.shirongbao.timenest.service.impl;
 
-import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.service.EmailService;
 import com.shirongbao.timenest.utils.RedisUtil;

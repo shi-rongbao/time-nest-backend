@@ -1,9 +1,11 @@
 package com.shirongbao.timenest.controller;
 
-import com.shirongbao.timenest.common.Result;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
+import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
 import com.shirongbao.timenest.service.TimeNestService;
 import com.shirongbao.timenest.validation.CreateNestValidation;
@@ -57,6 +59,13 @@ public class TimeNestController {
     public Result<String> uploadImageNest(@RequestParam("file") MultipartFile file) throws IOException {
         String imageUrl = timeNestService.uploadImageNest(file);
         return Result.success(imageUrl);
+    }
+
+    // 分页查看“我”创建的拾光纪条目列表
+    @PostMapping("/queryMyTimeNestList")
+    public Result<Page<TimeNest>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
+        Page<TimeNest> timeNestBoList = timeNestService.queryMyTimeNestList(timeNestDto);
+        return Result.success(timeNestBoList);
     }
 
 }

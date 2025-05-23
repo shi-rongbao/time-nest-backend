@@ -1,10 +1,12 @@
 package com.shirongbao.timenest.pojo.dto;
 
+import com.shirongbao.timenest.common.entity.PageInfo;
 import com.shirongbao.timenest.validation.CreateNestValidation;
 import com.shirongbao.timenest.validation.UnlockNestValidation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 import java.util.List;
@@ -14,8 +16,9 @@ import java.util.List;
  * @date: 2025-05-18
  * @description: 拾光纪Dto类
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class TimeNestDto {
+public class TimeNestDto extends PageInfo {
 
     // 拾光纪条目id
     @NotNull(message = "nestId不能为空", groups = {UnlockNestValidation.class})
@@ -28,6 +31,9 @@ public class TimeNestDto {
     // 要发送用户的邮箱（邮件类型使用）
     private String toEmail;
 
+    // 图片url(图片类型使用)
+    private String imageUrl;
+
     // 拾光纪条目标题
     @NotBlank(message = "nest标题不能为空", groups = {CreateNestValidation.class})
     private String nestTitle;
@@ -39,6 +45,9 @@ public class TimeNestDto {
     // 公开状态
     @NotNull(message = "公开状态不能为空", groups = {CreateNestValidation.class})
     private Integer publicStatus;
+
+    // 是否解锁：1-已解锁；0-未解锁
+    private Integer unlockedStatus;
 
     // 邀请共同创建好友id
     private List<Long> friendIdList;

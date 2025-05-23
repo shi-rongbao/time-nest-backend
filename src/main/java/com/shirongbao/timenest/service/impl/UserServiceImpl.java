@@ -5,7 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.*;
 import com.shirongbao.timenest.converter.FriendshipsConverter;

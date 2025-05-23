@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.common;
+package com.shirongbao.timenest.common.entity;
 
 import com.shirongbao.timenest.common.enums.ResultCodeEnum;
 import lombok.Data;

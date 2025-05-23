@@ -1,7 +1,9 @@
 package com.shirongbao.timenest.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
+import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,4 +28,7 @@ public interface TimeNestService extends IService<TimeNest> {
 
     // 上传图片nest
     String uploadImageNest(MultipartFile file) throws IOException;
+
+    // 分页查询“我”创建的拾光纪条目
+    Page<TimeNest> queryMyTimeNestList(TimeNestDto timeNestDto);
 }

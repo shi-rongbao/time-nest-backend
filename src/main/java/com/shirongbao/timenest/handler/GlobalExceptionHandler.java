@@ -1,7 +1,7 @@
 package com.shirongbao.timenest.handler;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import com.shirongbao.timenest.common.Result;
+import com.shirongbao.timenest.common.entity.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
