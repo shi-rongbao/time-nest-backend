@@ -17,6 +17,7 @@ import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.service.NotificationService;
+import com.shirongbao.timenest.service.PublicTimeNestService;
 import com.shirongbao.timenest.service.TimeNestService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
@@ -48,6 +49,8 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     private final NotificationService notificationService;
 
     private final UserService userService;
+
+    private final PublicTimeNestService publicTimeNestService;
 
     @Override
     public List<TimeNestBo> queryMyUnlockingNestList() {
@@ -91,12 +94,11 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         timeNest.setUnlockedStatus(UnlockedStatusEnum.UNLOCK.getCode());
         Integer publicStatus = timeNest.getPublicStatus();
         if (publicStatus == PublicStatusEnum.PUBLIC.getCode()) {
-            timeNest.setPublicTime(new Date());
+            // 往公开表中添加数据
+            publicTimeNestService.savePublic(nestId);
         }
 
         updateById(timeNest);
-
-        // todo 后面有了公开表，要修改公开表的内容
 
         // 根据不同的type，执行不同的策略
         Integer capsuleType = timeNest.getNestType();
