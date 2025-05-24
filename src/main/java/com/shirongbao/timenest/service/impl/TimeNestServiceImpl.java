@@ -15,6 +15,7 @@ import com.shirongbao.timenest.dao.TimeNestMapper;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
+import com.shirongbao.timenest.pojo.entity.PublicTimeNest;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.PublicTimeNestService;
@@ -71,7 +72,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         }
 
         // 转成boList
-        List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.tineNestListToTimeNestBoList(timeNestList);
+        List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestBoList(timeNestList);
         for (TimeNestBo timeNestBo : timeNestBoList) {
             // 计算还有几天解锁
             int unlockDays = (int) ((timeNestBo.getUnlockTime().getTime() - System.currentTimeMillis()) / (1000 * 60 * 60 * 24));
@@ -96,6 +97,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         if (publicStatus == PublicStatusEnum.PUBLIC.getCode()) {
             // 往公开表中添加数据
             publicTimeNestService.savePublic(nestId);
+            timeNest.setPublicTime(new Date());
         }
 
         updateById(timeNest);
@@ -169,6 +171,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         wrapper.eq(TimeNest::getUserId, currentUsersId);
         wrapper.eq(TimeNest::getNestStatus, StatusEnum.NORMAL.getCode());
         wrapper.eq(TimeNest::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        wrapper.orderByAsc(TimeNest::getCreatedAt);
         if (timeNestDto.getNestType() != null) {
             wrapper.eq(TimeNest::getNestType, timeNestDto.getNestType());
         }
@@ -200,6 +203,33 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
 
         // 设置一些空返回
         return setNull(timeNestBo);
+    }
+
+    @Override
+    public Page<TimeNest> queryPublicTimeNestList(TimeNestDto timeNestDto) {
+        Page<PublicTimeNest> publicTimeNestPage = new Page<>(timeNestDto.getPageNum(), timeNestDto.getPageSize());
+        // 分页查询
+        publicTimeNestPage = publicTimeNestService.selectPage(publicTimeNestPage);
+        List<PublicTimeNest> publicTimeNestList = publicTimeNestPage.getRecords();
+        List<Long> timeNestIdList = publicTimeNestList.stream().map(PublicTimeNest::getTimeNestId).collect(Collectors.toList());
+        Page<TimeNest> timeNestPage = new Page<>();
+        timeNestPage.setCurrent(publicTimeNestPage.getCurrent());
+        timeNestPage.setTotal(publicTimeNestPage.getTotal());
+        timeNestPage.setSize(publicTimeNestPage.getSize());
+        timeNestPage.setPages(publicTimeNestPage.getPages());
+        if (CollectionUtils.isEmpty(timeNestIdList)) {
+            return timeNestPage;
+        }
+
+        // 根据timeNestIdList查询TimeNest
+        LambdaQueryWrapper<TimeNest> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(TimeNest::getId, timeNestIdList);
+        wrapper.eq(TimeNest::getNestStatus, StatusEnum.NORMAL.getCode());
+        wrapper.eq(TimeNest::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        wrapper.orderByAsc(TimeNest::getUpdatedAt);
+        List<TimeNest> timeNestList = list(wrapper);
+        timeNestPage.setRecords(timeNestList);
+        return timeNestPage;
     }
 
     // 设置一些不必要的返回信息

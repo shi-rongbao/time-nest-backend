@@ -34,4 +34,8 @@ public interface TimeNestService extends IService<TimeNest> {
 
     // 查询拾光纪条目
     TimeNestBo queryTimeNest(Long id);
+
+    // 分页查看公开的拾光纪条目
+    Page<TimeNest> queryPublicTimeNestList(TimeNestDto timeNestDto);
+
 }

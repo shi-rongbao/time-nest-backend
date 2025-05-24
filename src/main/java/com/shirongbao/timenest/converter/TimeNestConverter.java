@@ -21,13 +21,15 @@ public interface TimeNestConverter {
 
     TimeNestVo timeNestBoToTimeNestVo(TimeNestBo timeNestBo);
 
-    List<TimeNestVo> tineNestBoListToTimeNestVoList(List<TimeNestBo> timeNestBoList);
+    List<TimeNestVo> timeNestBoListToTimeNestVoList(List<TimeNestBo> timeNestBoList);
 
-    List<TimeNestBo> tineNestListToTimeNestBoList(List<TimeNest> timeNestList);
+    List<TimeNestBo> timeNestListToTimeNestBoList(List<TimeNest> timeNestList);
 
     TimeNestBo timeNestDtoToTimeNestBo(TimeNestDto timeNestDto);
 
     TimeNest timeNestBoToTimeNest(TimeNestBo timeNestBo);
 
     TimeNestBo timeNestToTimeNestBo(TimeNest timeNest);
+
+    List<TimeNestVo> timeNestListToTimeNestVoList(List<TimeNest> timeNestList);
 }

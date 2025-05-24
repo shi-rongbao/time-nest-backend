@@ -34,7 +34,7 @@ public class TimeNestController {
     @GetMapping("/queryMyUnlockingNestList")
     public Result<List<TimeNestVo>> queryMyUnlockingNestList() {
         List<TimeNestBo> timeNestBoList = timeNestService.queryMyUnlockingNestList();
-        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.tineNestBoListToTimeNestVoList(timeNestBoList);
+        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestBoList);
         return Result.success(timeNestVoList);
     }
 
@@ -64,8 +64,8 @@ public class TimeNestController {
     // 分页查看“我”创建的拾光纪条目列表
     @PostMapping("/queryMyTimeNestList")
     public Result<Page<TimeNest>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
-        Page<TimeNest> timeNestBoList = timeNestService.queryMyTimeNestList(timeNestDto);
-        return Result.success(timeNestBoList);
+        Page<TimeNest> timeNestPage = timeNestService.queryMyTimeNestList(timeNestDto);
+        return Result.success(timeNestPage);
     }
 
     // 查看拾光纪条目
@@ -77,6 +77,17 @@ public class TimeNestController {
         }
         TimeNestVo timeNestVo = TimeNestConverter.INSTANCE.timeNestBoToTimeNestVo(timeNestBo);
         return Result.success(timeNestVo);
+    }
+
+    // 分页查看公开的拾光纪条目
+    @PostMapping("/queryPublicTimeNestList")
+    public Result<Page<TimeNestVo>> queryPublicTimeNestList(@RequestBody TimeNestDto timeNestDto) {
+        Page<TimeNest> timeNestPage = timeNestService.queryPublicTimeNestList(timeNestDto);
+        List<TimeNest> timeNestList = timeNestPage.getRecords();
+        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestVoList(timeNestList);
+        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestPage.getCurrent(), timeNestPage.getSize(), timeNestPage.getTotal());
+        timeNestVoPage.setRecords(timeNestVoList);
+        return Result.success(timeNestVoPage);
     }
 
 }

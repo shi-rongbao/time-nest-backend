@@ -1,5 +1,7 @@
 package com.shirongbao.timenest.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.dao.PublicTimeNestMapper;
 import com.shirongbao.timenest.pojo.entity.PublicTimeNest;
@@ -23,6 +25,13 @@ public class PublicTimeNestServiceImpl extends ServiceImpl<PublicTimeNestMapper,
         publicTimeNest.setPublicTime(new Date());
 
         save(publicTimeNest);
+    }
+
+    @Override
+    public Page<PublicTimeNest> selectPage(Page<PublicTimeNest> publicTimeNestPage) {
+        LambdaQueryWrapper<PublicTimeNest> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByAsc(PublicTimeNest::getCreatedAt);
+        return baseMapper.selectPage(publicTimeNestPage, wrapper);
     }
 
 }
