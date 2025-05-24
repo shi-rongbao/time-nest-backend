@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -19,8 +20,17 @@ public class TimeNestVo {
     // 用户id
     private Long userId;
 
+    // 一同创建的用户id
+    private List<UsersVo> togetherUsers;
+
     // nest类型：1-胶囊；2-邮箱；3-图片；
     private Integer nestType;
+
+    // 要发送的邮箱(邮箱类型使用)
+    private String toEmail;
+
+    // 图片url(图片类型使用)
+    private String imageUrl;
 
     // nest标题
     private String nestTitle;

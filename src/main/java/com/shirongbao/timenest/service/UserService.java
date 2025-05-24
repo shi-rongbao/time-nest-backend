@@ -48,4 +48,6 @@ public interface UserService  extends IService<Users> {
     // 逻辑删除注销的用户
     void doLogicDelete(List<Users> usersList);
 
+    // 获取用户Bo列表
+    List<UsersBo> getUsersBoList(List<Long> userIdList);
 }

@@ -13,10 +13,12 @@ import com.shirongbao.timenest.common.enums.UnlockedStatusEnum;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.dao.TimeNestMapper;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
+import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.TimeNestService;
+import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.strategy.nest.NestStrategy;
 import com.shirongbao.timenest.strategy.nest.NestStrategyFactory;
@@ -26,10 +28,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +46,8 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     private final OssService ossService;
 
     private final NotificationService notificationService;
+
+    private final UserService userService;
 
     @Override
     public List<TimeNestBo> queryMyUnlockingNestList() {
@@ -175,6 +176,66 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         Page<TimeNest> timeNestPage = new Page<>(timeNestDto.getPageNum(), timeNestDto.getPageSize());
         // 分页查询
         return baseMapper.selectPage(timeNestPage, wrapper);
+    }
+
+    @Override
+    public TimeNestBo queryTimeNest(Long id) {
+        TimeNest timeNest = getById(id);
+        // 基础校验
+        if (basicCheck(timeNest)) {
+            return null;
+        }
+
+        // 转成bo
+        TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestToTimeNestBo(timeNest);
+        List<Long> userIdList = JSON.parseObject(timeNest.getFriendIds(), new TypeReference<List<Long>>() {});
+        userIdList.add(timeNest.getUserId());
+        timeNestBo.setFriendIdList(userIdList);
+
+        // 拿到一同创建的好友信息
+        List<UsersBo> usersBoList = userService.getUsersBoList(userIdList);
+        timeNestBo.setTogetherUsers(usersBoList);
+
+        // 设置一些空返回
+        return setNull(timeNestBo);
+    }
+
+    // 设置一些不必要的返回信息
+    private TimeNestBo setNull(TimeNestBo timeNestBo) {
+        timeNestBo.setId(null);
+        timeNestBo.setUserId(null);
+        for (UsersBo togetherUser : timeNestBo.getTogetherUsers()) {
+            togetherUser.setEmail(null);
+            togetherUser.setPhone(null);
+        }
+        timeNestBo.setUnlockTime(null);
+        timeNestBo.setPublicTime(null);
+        timeNestBo.setCreatedAt(null);
+        return timeNestBo;
+    }
+
+    // 基础校验
+    private boolean basicCheck(TimeNest timeNest) {
+        if (Objects.isNull(timeNest)) {
+            throw new RuntimeException("当前数据异常，请稍后再试！");
+        }
+
+        // 当前拾光纪还未解锁
+        if (timeNest.getUnlockedStatus() == UnlockedStatusEnum.LOCK.getCode()) {
+            return true;
+        }
+
+        // 不是我创建的拾光纪，且还未公开，那么不可见！
+        if (timeNest.getUserId() != StpUtil.getLoginIdAsLong()
+                && timeNest.getPublicStatus() != PublicStatusEnum.PUBLIC.getCode()) {
+            // 不是这个用户的拾光纪，看不到的
+            throw new RuntimeException("当前数据异常，请稍后再试！");
+        }
+
+        // 不是我的，公开了，但未到时间，那么不可见！
+        return timeNest.getUserId() != StpUtil.getLoginIdAsLong()
+                && timeNest.getPublicStatus() != PublicStatusEnum.PUBLIC.getCode()
+                && timeNest.getPublicTime().before(new Date());
     }
 
 }

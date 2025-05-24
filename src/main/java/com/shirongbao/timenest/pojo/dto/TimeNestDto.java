@@ -2,7 +2,7 @@ package com.shirongbao.timenest.pojo.dto;
 
 import com.shirongbao.timenest.common.entity.PageInfo;
 import com.shirongbao.timenest.validation.CreateNestValidation;
-import com.shirongbao.timenest.validation.UnlockNestValidation;
+import com.shirongbao.timenest.validation.TimeNestIdValidation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -21,7 +21,7 @@ import java.util.List;
 public class TimeNestDto extends PageInfo {
 
     // 拾光纪条目id
-    @NotNull(message = "nestId不能为空", groups = {UnlockNestValidation.class})
+    @NotNull(message = "nestId不能为空", groups = {TimeNestIdValidation.class})
     private Long id;
 
     // 拾光纪条目类型 1-胶囊；2-邮箱；3-图片

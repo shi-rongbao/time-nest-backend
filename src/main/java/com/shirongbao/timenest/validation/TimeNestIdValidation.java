@@ -5,5 +5,5 @@ package com.shirongbao.timenest.validation;
  * @date: 2025-05-20
  * @description: 校验参数接口
  */
-public interface UnlockNestValidation {
+public interface TimeNestIdValidation {
 }

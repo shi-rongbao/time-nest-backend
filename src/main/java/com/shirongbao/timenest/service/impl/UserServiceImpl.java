@@ -10,6 +10,7 @@ import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.*;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
+import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -236,6 +238,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             users.setIsDeleted(IsDeletedEnum.DELETED.getCode());
         }
         updateBatchById(usersList);
+    }
+
+    @Override
+    public List<UsersBo> getUsersBoList(List<Long> userIdList) {
+        if (CollectionUtils.isEmpty(userIdList)) {
+            return new ArrayList<>();
+        }
+        LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(Users::getId, userIdList);
+        wrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        wrapper.eq(Users::getStatus, StatusEnum.NORMAL.getCode());
+        List<Users> usersList = list(wrapper);
+        return UserConverter.INSTANCE.usersListToUsersBoList(usersList);
     }
 
     // 获取用户信息，最多执行三次递归

@@ -43,6 +43,9 @@ public class TimeNestBo {
     // 邀请共同创建好友id
     private List<Long> friendIdList;
 
+    // 好友的信息
+    private List<UsersBo> togetherUsers;
+
     // 解锁通知谁看(入参List类型)
     private List<Long> unlockToUserIdList;
 

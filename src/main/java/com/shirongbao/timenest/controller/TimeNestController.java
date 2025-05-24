@@ -9,7 +9,7 @@ import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
 import com.shirongbao.timenest.service.TimeNestService;
 import com.shirongbao.timenest.validation.CreateNestValidation;
-import com.shirongbao.timenest.validation.UnlockNestValidation;
+import com.shirongbao.timenest.validation.TimeNestIdValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +40,7 @@ public class TimeNestController {
 
     // 提前解锁nest
     @PostMapping("/unlockNest")
-    public Result<Boolean> unlockNest(@RequestBody @Validated(UnlockNestValidation.class) TimeNestDto timeNestDto) {
+    public Result<Boolean> unlockNest(@RequestBody @Validated(TimeNestIdValidation.class) TimeNestDto timeNestDto) {
         Long nestId = timeNestDto.getId();
         timeNestService.unlockNest(nestId);
         return Result.success();
@@ -66,6 +66,17 @@ public class TimeNestController {
     public Result<Page<TimeNest>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNest> timeNestBoList = timeNestService.queryMyTimeNestList(timeNestDto);
         return Result.success(timeNestBoList);
+    }
+
+    // 查看拾光纪条目
+    @PostMapping("/queryTimeNest")
+    public Result<TimeNestVo> queryTimeNest(@RequestBody @Validated(TimeNestIdValidation.class) TimeNestDto timeNestDto) {
+        TimeNestBo timeNestBo = timeNestService.queryTimeNest(timeNestDto.getId());
+        if (timeNestBo == null) {
+            return Result.fail("当前拾光纪还未解锁/还未到公开时间，暂时不能查看~");
+        }
+        TimeNestVo timeNestVo = TimeNestConverter.INSTANCE.timeNestBoToTimeNestVo(timeNestBo);
+        return Result.success(timeNestVo);
     }
 
 }

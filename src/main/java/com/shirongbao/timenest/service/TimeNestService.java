@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,4 +32,7 @@ public interface TimeNestService extends IService<TimeNest> {
 
     // 分页查询“我”创建的拾光纪条目
     Page<TimeNest> queryMyTimeNestList(TimeNestDto timeNestDto);
+
+    // 查询拾光纪条目
+    TimeNestBo queryTimeNest(Long id);
 }

@@ -7,6 +7,8 @@ import com.shirongbao.timenest.pojo.vo.UsersVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 /**
  * @author: ShiRongbao
  * @date: 2025-05-16
@@ -22,4 +24,6 @@ public interface UserConverter {
     Users requestObjectToEntity(UsersDto request);
 
     UsersBo usersDtoToUsersBo(UsersDto usersDto);
+
+    List<UsersBo> usersListToUsersBoList(List<Users> usersList);
 }

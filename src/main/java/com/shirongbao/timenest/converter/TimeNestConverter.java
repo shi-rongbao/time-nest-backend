@@ -19,8 +19,6 @@ public interface TimeNestConverter {
 
     TimeNestConverter INSTANCE = Mappers.getMapper(TimeNestConverter.class);
 
-    TimeNestVo timeNestToTimeNestVo(TimeNest timeNest);
-
     TimeNestVo timeNestBoToTimeNestVo(TimeNestBo timeNestBo);
 
     List<TimeNestVo> tineNestBoListToTimeNestVoList(List<TimeNestBo> timeNestBoList);
@@ -30,4 +28,6 @@ public interface TimeNestConverter {
     TimeNestBo timeNestDtoToTimeNestBo(TimeNestDto timeNestDto);
 
     TimeNest timeNestBoToTimeNest(TimeNestBo timeNestBo);
+
+    TimeNestBo timeNestToTimeNestBo(TimeNest timeNest);
 }

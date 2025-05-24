@@ -16,6 +16,9 @@ public class UsersBo {
     // 用户密码
     private String password;
 
+    // 用户头像url
+    private String avatarUrl;
+
     // 用户邮箱
     private String email;
 
