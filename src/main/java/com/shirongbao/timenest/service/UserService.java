@@ -2,9 +2,7 @@ package com.shirongbao.timenest.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.common.entity.Result;
-import com.shirongbao.timenest.pojo.bo.NotificationBo;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
-import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
@@ -12,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author: ShiRongbao

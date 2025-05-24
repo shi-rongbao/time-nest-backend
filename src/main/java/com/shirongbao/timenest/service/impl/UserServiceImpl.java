@@ -11,13 +11,9 @@ import com.shirongbao.timenest.common.enums.*;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
-import com.shirongbao.timenest.pojo.entity.FriendRequests;
-import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
-import com.shirongbao.timenest.service.FriendRequestsService;
-import com.shirongbao.timenest.service.FriendshipsService;
 import com.shirongbao.timenest.service.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.utils.RedisUtil;
@@ -34,9 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author: ShiRongbao
