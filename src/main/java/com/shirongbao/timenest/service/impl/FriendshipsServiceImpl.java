@@ -41,7 +41,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @RequiredArgsConstructor
 public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Friendships> implements FriendshipsService {
 
-    private final ThreadPoolExecutor labelThreadPool;
+    private final ThreadPoolExecutor threadPool;
 
     private final UserService userService;
 
@@ -57,14 +57,14 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
             wrapper.eq(Friendships::getUserId1, currentUserId);
             wrapper.eq(Friendships::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
             return this.list(wrapper);
-        }, labelThreadPool);
+        }, threadPool);
 
         CompletableFuture<List<Friendships>> user2FriendshipsList = CompletableFuture.supplyAsync(() -> {
             LambdaQueryWrapper<Friendships> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(Friendships::getUserId2, currentUserId);
             wrapper.eq(Friendships::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
             return this.list(wrapper);
-        }, labelThreadPool);
+        }, threadPool);
 
         // 等待所有任务完成
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(user1FriendshipsList, user2FriendshipsList);
@@ -112,7 +112,7 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
                 usersVo.setIntroduce(friendUser.getIntroduce());
                 usersVoList.add(usersVo);
                 return usersVoList;
-            }, labelThreadPool);
+            }, threadPool);
 
             futures.add(future);
         }

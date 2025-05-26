@@ -2,6 +2,7 @@ package com.shirongbao.timenest.pojo.dto;
 
 import com.shirongbao.timenest.common.entity.PageInfo;
 import com.shirongbao.timenest.validation.CreateNestValidation;
+import com.shirongbao.timenest.validation.LikeTimeNestValidation;
 import com.shirongbao.timenest.validation.TimeNestIdValidation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,6 +28,10 @@ public class TimeNestDto extends PageInfo {
     // 拾光纪条目类型 1-胶囊；2-邮箱；3-图片
     @NotNull(message = "nest类型不能为空", groups = {CreateNestValidation.class})
     private Integer nestType;
+
+    // 点赞，取消点赞（1-点赞；0-取消点赞）
+    @NotNull(message = "点赞类型不能为空", groups = {LikeTimeNestValidation.class})
+    private Integer likeType;
 
     // 要发送用户的邮箱（邮件类型使用）
     private String toEmail;

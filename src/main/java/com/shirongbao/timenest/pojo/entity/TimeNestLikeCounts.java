@@ -8,23 +8,20 @@ import java.util.Date;
 
 /**
  * @author: ShiRongbao
- * @date: 2025-05-24
- * @description: 点赞的拾光纪条目
+ * @date: 2025-05-26
+ * @description: 时光巢点赞数统计
  */
 @Data
-public class LikeTimeNest {
+public class TimeNestLikeCounts {
 
     // 主键
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    // 拾光纪id
+    // nest的id (关联 time_nest.id)
     private Long timeNestId;
 
-    // 用户id
-    private Long userId;
-
-    // 点赞数
+    // 点赞总数
     private Long likeCount;
 
     // 创建时间
@@ -32,5 +29,4 @@ public class LikeTimeNest {
 
     // 更新时间
     private Date updatedAt;
-
 }

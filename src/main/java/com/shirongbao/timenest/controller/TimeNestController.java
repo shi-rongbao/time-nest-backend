@@ -7,8 +7,10 @@ import com.shirongbao.timenest.pojo.bo.TimeNestBo;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
+import com.shirongbao.timenest.service.TimeNestLikeCountsService;
 import com.shirongbao.timenest.service.TimeNestService;
 import com.shirongbao.timenest.validation.CreateNestValidation;
+import com.shirongbao.timenest.validation.LikeTimeNestValidation;
 import com.shirongbao.timenest.validation.TimeNestIdValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +31,8 @@ import java.util.List;
 public class TimeNestController {
 
     private final TimeNestService timeNestService;
+
+    private final TimeNestLikeCountsService timeNestLikeCountsService;
 
     // 查询“我”快要解锁的拾光纪条目列表（最多6个）
     @GetMapping("/queryMyUnlockingNestList")
@@ -88,6 +92,15 @@ public class TimeNestController {
         Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestPage.getCurrent(), timeNestPage.getSize(), timeNestPage.getTotal());
         timeNestVoPage.setRecords(timeNestVoList);
         return Result.success(timeNestVoPage);
+    }
+
+    // 点赞(取消点赞)拾光纪条目
+    @PostMapping("/likeTimeNest")
+    public Result<Boolean> likeTimeNest(@RequestBody @Validated({TimeNestIdValidation.class, LikeTimeNestValidation.class}) TimeNestDto timeNestDto) {
+        Long nestId = timeNestDto.getId();
+        Integer likeType = timeNestDto.getLikeType();
+        timeNestLikeCountsService.likeTimeNest(nestId, likeType);
+        return Result.success();
     }
 
 }

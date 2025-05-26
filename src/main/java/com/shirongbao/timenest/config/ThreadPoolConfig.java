@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPoolConfig {
 
     @Bean
-    public ThreadPoolExecutor labelThreadPool() {
+    public ThreadPoolExecutor threadPool() {
         return new ThreadPoolExecutor(
                 20,  // 核心线程数
                 100,  // 最大线程数
