@@ -30,12 +30,12 @@ public interface TimeNestService extends IService<TimeNest> {
     String uploadImageNest(MultipartFile file) throws IOException;
 
     // 分页查询“我”创建的拾光纪条目
-    Page<TimeNest> queryMyTimeNestList(TimeNestDto timeNestDto);
+    Page<TimeNestBo> queryMyTimeNestList(TimeNestDto timeNestDto);
 
     // 查询拾光纪条目
     TimeNestBo queryTimeNest(Long id);
 
     // 分页查看公开的拾光纪条目
-    Page<TimeNest> queryPublicTimeNestList(TimeNestDto timeNestDto);
+    Page<TimeNestBo> queryPublicTimeNestList(TimeNestDto timeNestDto);
 
 }

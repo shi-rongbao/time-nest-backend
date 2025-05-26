@@ -41,6 +41,9 @@ public class TimeNestVo {
     // 是否公开：1-公开；0-私密
     private Integer publicStatus;
 
+    // 是否点过赞(1-点赞；0-未点赞)
+    private Integer isLike;
+
     // 是否解锁：1-已解锁；0-未解锁
     private Integer unlockedStatus;
 

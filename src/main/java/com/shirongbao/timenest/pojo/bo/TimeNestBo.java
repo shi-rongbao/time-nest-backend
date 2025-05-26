@@ -40,6 +40,9 @@ public class TimeNestBo {
     // 是否公开：1-公开；0-私密
     private Integer publicStatus;
 
+    // 是否点过赞(1-点赞；0-未点赞)
+    private Integer isLike;
+
     // 邀请共同创建好友id
     private List<Long> friendIdList;
 

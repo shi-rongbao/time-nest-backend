@@ -67,9 +67,14 @@ public class TimeNestController {
 
     // 分页查看“我”创建的拾光纪条目列表
     @PostMapping("/queryMyTimeNestList")
-    public Result<Page<TimeNest>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
-        Page<TimeNest> timeNestPage = timeNestService.queryMyTimeNestList(timeNestDto);
-        return Result.success(timeNestPage);
+    public Result<Page<TimeNestVo>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
+        Page<TimeNestBo> timeNestBoPage = timeNestService.queryMyTimeNestList(timeNestDto);
+        // 转成vo
+        List<TimeNestBo> timeNestList = timeNestBoPage.getRecords();
+        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestList);
+        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestBoPage.getCurrent(), timeNestBoPage.getSize(), timeNestBoPage.getTotal());
+        timeNestVoPage.setRecords(timeNestVoList);
+        return Result.success(timeNestVoPage);
     }
 
     // 查看拾光纪条目
@@ -86,10 +91,10 @@ public class TimeNestController {
     // 分页查看公开的拾光纪条目
     @PostMapping("/queryPublicTimeNestList")
     public Result<Page<TimeNestVo>> queryPublicTimeNestList(@RequestBody TimeNestDto timeNestDto) {
-        Page<TimeNest> timeNestPage = timeNestService.queryPublicTimeNestList(timeNestDto);
-        List<TimeNest> timeNestList = timeNestPage.getRecords();
-        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestVoList(timeNestList);
-        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestPage.getCurrent(), timeNestPage.getSize(), timeNestPage.getTotal());
+        Page<TimeNestBo> timeNestBoPage = timeNestService.queryPublicTimeNestList(timeNestDto);
+        List<TimeNestBo> timeNestList = timeNestBoPage.getRecords();
+        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestList);
+        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestBoPage.getCurrent(), timeNestBoPage.getSize(), timeNestBoPage.getTotal());
         timeNestVoPage.setRecords(timeNestVoList);
         return Result.success(timeNestVoPage);
     }
