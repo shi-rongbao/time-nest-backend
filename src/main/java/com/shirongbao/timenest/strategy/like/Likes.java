@@ -32,11 +32,12 @@ public class Likes implements LikeStrategy{
         UserLikes userLikes = userLikesService.queryUserLike(currentUserId, nestId);
         if (Objects.isNull(userLikes)) {
             // 新增一条记录
-            userLikes = new UserLikes();
-            userLikes.setTimeNestId(nestId);
-            userLikes.setUserId(currentUserId);
-            userLikes.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
-            userLikesService.save(userLikes);
+            UserLikes newUserLikes = new UserLikes();
+            newUserLikes.setTimeNestId(nestId);
+            newUserLikes.setUserId(currentUserId);
+            newUserLikes.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+            userLikesService.save(newUserLikes);
+            return;
         }
 
         // 用户点赞过
