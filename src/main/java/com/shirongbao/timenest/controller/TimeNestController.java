@@ -30,7 +30,7 @@ public class TimeNestController {
 
     private final TimeNestService timeNestService;
 
-    // 查询“我”快要解锁的拾光纪条目列表（最多4个）
+    // 查询“我”快要解锁的拾光纪条目列表（最多6个）
     @GetMapping("/queryMyUnlockingNestList")
     public Result<List<TimeNestVo>> queryMyUnlockingNestList() {
         List<TimeNestBo> timeNestBoList = timeNestService.queryMyUnlockingNestList();

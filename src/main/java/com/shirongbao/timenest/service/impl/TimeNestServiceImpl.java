@@ -63,8 +63,8 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         wrapper.eq(TimeNest::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
         // 根据解锁日期排序
         wrapper.orderByAsc(TimeNest::getUnlockTime);
-        // 最多要4条即可！
-        wrapper.last("limit 4");
+        // 最多要6条即可！
+        wrapper.last("limit 6");
 
         List<TimeNest> timeNestList = list(wrapper);
         if (CollectionUtils.isEmpty(timeNestList)) {
