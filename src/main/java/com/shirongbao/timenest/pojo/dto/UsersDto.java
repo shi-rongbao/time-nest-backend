@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class UsersDto {
 
-    @NotBlank(message = "账号不能为空", groups = SentFriendRequest.class)
+    @NotBlank(message = "账号不能为空", groups = {SentFriendRequest.class, RegisterValidation.class})
     @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]{5,18}$", message = "用户名不符合格式要求！")
     private String userAccount;
 
