@@ -1,5 +1,6 @@
 package com.shirongbao.timenest.controller;
 
+import com.shirongbao.timenest.anno.RateLimit;
 import com.shirongbao.timenest.service.oss.OssService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class OssController {
 
     private final OssService ossService;
 
+    @RateLimit
     @PostMapping("/upload")
     public String test(@RequestParam("file") MultipartFile file) throws IOException {
         return ossService.uploadAvatar(file);

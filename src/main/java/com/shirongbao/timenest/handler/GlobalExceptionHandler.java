@@ -25,6 +25,6 @@ public class GlobalExceptionHandler {
     // 处理其他通用异常
     @ExceptionHandler(value = {Exception.class})
     public Result<Boolean> handleOtherExceptions(Exception ex) {
-        return Result.fail("出问题了！(┬＿┬)");
+        return Result.fail("出问题了！(┬＿┬) 可以联系：2502260933");
     }
 }

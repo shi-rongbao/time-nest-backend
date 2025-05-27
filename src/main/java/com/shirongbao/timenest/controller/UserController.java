@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.shirongbao.timenest.anno.RateLimit;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.converter.NotificationConverter;
 import com.shirongbao.timenest.converter.UserConverter;
@@ -16,6 +17,7 @@ import com.shirongbao.timenest.service.EmailService;
 import com.shirongbao.timenest.service.FriendshipsService;
 import com.shirongbao.timenest.service.NotificationService;
 import com.shirongbao.timenest.service.UserService;
+import com.shirongbao.timenest.validation.LoginValidation;
 import com.shirongbao.timenest.validation.RegisterValidation;
 import com.shirongbao.timenest.validation.SentFriendRequest;
 import lombok.RequiredArgsConstructor;
@@ -56,20 +58,23 @@ public class UserController {
     }
 
     // 注册
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     @PostMapping("/register")
-    public Result<String> register(@RequestBody @Validated(RegisterValidation.class) UsersDto request) {
+    public Result<String> register(@RequestBody @Validated({RegisterValidation.class}) UsersDto request) {
         return userService.register(request);
     }
 
     // 发送邮箱验证码
     @GetMapping("/sendEmailCode")
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     public Result<String> sendEmailCode(@RequestParam("email") String email) {
         return emailService.sendEmailCode(email);
     }
 
     // 登录
     @PostMapping("/login")
-    public Result<String> login(@RequestBody @Validated UsersDto request) {
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
+    public Result<String> login(@RequestBody @Validated({LoginValidation.class}) UsersDto request) {
         String token = userService.login(request);
         if (StringUtils.isBlank(token)) {
             return Result.fail("用户名或密码输入错误！");
@@ -78,6 +83,7 @@ public class UserController {
     }
 
     // 登出
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     @GetMapping("/logout")
     public Result<Boolean> logout() {
         userService.logout();
@@ -85,24 +91,28 @@ public class UserController {
     }
 
     // 用户上传头像
+    @RateLimit
     @PostMapping("/uploadAvatar")
     public Result<String> uploadAvatar(@RequestParam("file") MultipartFile file) throws IOException {
         return userService.uploadAvatar(file);
     }
 
     // 获取用户基本信息
+    @RateLimit
     @GetMapping("/getUserInfo")
     public Result<UsersVo> getUserInfo() {
         return Result.success(userService.getUserInfo());
     }
 
     // 修改基本信息
+    @RateLimit
     @PostMapping("/updateUserInfo")
     public Result<Boolean> updateUserInfo(@RequestBody UsersDto request) {
         return userService.updateUserInfo(request);
     }
 
     // 注销
+    @RateLimit
     @GetMapping("/deactivateRequest")
     public Result<Boolean> deactivateRequest() {
         userService.deactivateRequest();
@@ -110,6 +120,7 @@ public class UserController {
     }
 
     // 发送好友申请
+    @RateLimit
     @PostMapping("/sendFriendRequest")
     public Result<String> sendFriendRequest(@RequestBody @Validated({SentFriendRequest.class}) UsersDto usersDto) {
         UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
@@ -117,6 +128,7 @@ public class UserController {
     }
 
     // 获取未读通知
+    @RateLimit
     @GetMapping("/getUnreadNotifications")
     public Result<List<NotificationVo>> getUnreadNotifications() {
         long currentUserId = StpUtil.getLoginIdAsLong();
@@ -131,6 +143,7 @@ public class UserController {
     }
 
     // 标记为已读
+    @RateLimit
     @GetMapping("/markAsRead")
     public Result<Boolean> markAsRead(@RequestParam("noticeId") Long noticeId) {
         // 点击消息后将消息标记为已读
@@ -139,6 +152,7 @@ public class UserController {
     }
 
     // 接受/拒绝好友申请(处理好友申请)
+    @RateLimit
     @PostMapping("/processingFriendRequest")
     public Result<Boolean> processingFriendRequest(@RequestBody @Validated FriendRequestsDto friendRequestsDto) {
         Long friendRequestId = friendRequestsDto.getFriendRequestId();
@@ -147,6 +161,7 @@ public class UserController {
     }
 
     // 查看好友列表
+    @RateLimit
     @GetMapping("/getFriendList")
     public Result<List<UsersVo>> getFriendList() throws ExecutionException, InterruptedException {
         long currentUserId = StpUtil.getLoginIdAsLong();

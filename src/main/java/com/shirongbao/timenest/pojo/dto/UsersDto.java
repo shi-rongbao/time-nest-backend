@@ -1,5 +1,6 @@
 package com.shirongbao.timenest.pojo.dto;
 
+import com.shirongbao.timenest.validation.LoginValidation;
 import com.shirongbao.timenest.validation.RegisterValidation;
 import com.shirongbao.timenest.validation.SentFriendRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -14,8 +15,8 @@ import lombok.Data;
 @Data
 public class UsersDto {
 
-    @NotBlank(message = "账号不能为空", groups = {SentFriendRequest.class, RegisterValidation.class})
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]{5,18}$", message = "用户名不符合格式要求！")
+    @NotBlank(message = "账号不能为空", groups = {SentFriendRequest.class, RegisterValidation.class, LoginValidation.class})
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]{4,18}$", message = "用户名不符合格式要求！", groups = {RegisterValidation.class, LoginValidation.class})
     private String userAccount;
 
     @NotBlank(message = "密码不能为空")

@@ -16,4 +16,11 @@ public class RedisConstant {
     // 用户基础信息缓存前缀
     public static final String USER_CACHE_PREFIX = "user:cache";
 
+    // ========== 限流相关常量 ==========
+    // IP限流 - 分钟级前缀
+    public static final String RATE_LIMIT_MINUTE = "rate:limit:minute";
+
+    // IP限流 - 小时级前缀
+    public static final String RATE_LIMIT_HOUR = "rate:limit:hour";
+
 }

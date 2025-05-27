@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shirongbao.timenest.anno.RateLimit;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
@@ -35,6 +36,7 @@ public class TimeNestController {
     private final TimeNestLikeCountsService timeNestLikeCountsService;
 
     // 查询“我”快要解锁的拾光纪条目列表（最多6个）
+    @RateLimit
     @GetMapping("/queryMyUnlockingNestList")
     public Result<List<TimeNestVo>> queryMyUnlockingNestList() {
         List<TimeNestBo> timeNestBoList = timeNestService.queryMyUnlockingNestList();
@@ -43,6 +45,7 @@ public class TimeNestController {
     }
 
     // 提前解锁nest
+    @RateLimit
     @PostMapping("/unlockNest")
     public Result<Boolean> unlockNest(@RequestBody @Validated(TimeNestIdValidation.class) TimeNestDto timeNestDto) {
         Long nestId = timeNestDto.getId();
@@ -51,6 +54,7 @@ public class TimeNestController {
     }
 
     // 创建nest
+    @RateLimit
     @PostMapping("/createTimeNest")
     public Result<Boolean> createTimeNest(@RequestBody @Validated(CreateNestValidation.class) TimeNestDto timeNestDto) {
         TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestDtoToTimeNestBo(timeNestDto);
@@ -59,6 +63,7 @@ public class TimeNestController {
     }
 
     // 上传图片nest
+    @RateLimit
     @PostMapping("/uploadImageNest")
     public Result<String> uploadImageNest(@RequestParam("file") MultipartFile file) throws IOException {
         String imageUrl = timeNestService.uploadImageNest(file);
@@ -66,6 +71,7 @@ public class TimeNestController {
     }
 
     // 分页查看“我”创建的拾光纪条目列表
+    @RateLimit
     @PostMapping("/queryMyTimeNestList")
     public Result<Page<TimeNestVo>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNestBo> timeNestBoPage = timeNestService.queryMyTimeNestList(timeNestDto);
@@ -78,6 +84,7 @@ public class TimeNestController {
     }
 
     // 查看拾光纪条目
+    @RateLimit
     @PostMapping("/queryTimeNest")
     public Result<TimeNestVo> queryTimeNest(@RequestBody @Validated(TimeNestIdValidation.class) TimeNestDto timeNestDto) {
         TimeNestBo timeNestBo = timeNestService.queryTimeNest(timeNestDto.getId());
@@ -89,6 +96,7 @@ public class TimeNestController {
     }
 
     // 分页查看公开的拾光纪条目
+    @RateLimit
     @PostMapping("/queryPublicTimeNestList")
     public Result<Page<TimeNestVo>> queryPublicTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNestBo> timeNestBoPage = timeNestService.queryPublicTimeNestList(timeNestDto);
@@ -100,6 +108,7 @@ public class TimeNestController {
     }
 
     // 点赞(取消点赞)拾光纪条目
+    @RateLimit
     @PostMapping("/likeTimeNest")
     public Result<Boolean> likeTimeNest(@RequestBody @Validated({TimeNestIdValidation.class, LikeTimeNestValidation.class}) TimeNestDto timeNestDto) {
         Long nestId = timeNestDto.getId();
@@ -109,6 +118,7 @@ public class TimeNestController {
     }
 
     // 分页查看“我”点赞的拾光纪条目
+    @RateLimit
     @PostMapping("/queryMyLikeTimeNestList")
     public Result<Page<TimeNestVo>> queryMyLikeTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNestBo> timeNestBoPage = timeNestService.queryMyLikeTimeNestList(timeNestDto);
