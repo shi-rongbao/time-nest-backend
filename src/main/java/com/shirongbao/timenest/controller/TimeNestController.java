@@ -108,4 +108,15 @@ public class TimeNestController {
         return Result.success();
     }
 
+    // 分页查看“我”点赞的拾光纪条目
+    @PostMapping("/queryMyLikeTimeNestList")
+    public Result<Page<TimeNestVo>> queryMyLikeTimeNestList(@RequestBody TimeNestDto timeNestDto) {
+        Page<TimeNestBo> timeNestBoPage = timeNestService.queryMyLikeTimeNestList(timeNestDto);
+        List<TimeNestBo> timeNestList = timeNestBoPage.getRecords();
+        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestList);
+        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestBoPage.getCurrent(), timeNestBoPage.getSize(), timeNestBoPage.getTotal());
+        timeNestVoPage.setRecords(timeNestVoList);
+        return Result.success(timeNestVoPage);
+    }
+
 }

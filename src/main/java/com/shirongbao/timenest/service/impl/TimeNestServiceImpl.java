@@ -263,6 +263,34 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         return timeNestBoPage;
     }
 
+    @Override
+    public Page<TimeNestBo> queryMyLikeTimeNestList(TimeNestDto timeNestDto) {
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        Page<UserLikes> userLikesPage = userLikesService.queryMyLikeTimeNestList(timeNestDto, currentUserId);
+        List<Long> timeNestIdList = userLikesPage.getRecords().stream().map(UserLikes::getTimeNestId).collect(Collectors.toList());
+
+        Map<Long, Integer> likeMap = queryIsLike(currentUserId, timeNestIdList);
+
+        // 根据timeNestIdList查询TimeNest
+        LambdaQueryWrapper<TimeNest> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(TimeNest::getId, timeNestIdList);
+        wrapper.eq(TimeNest::getNestStatus, StatusEnum.NORMAL.getCode());
+        wrapper.eq(TimeNest::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        wrapper.orderByAsc(TimeNest::getUpdatedAt);
+        List<TimeNest> timeNestList = list(wrapper);
+
+        List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestBoList(timeNestList);
+
+        // 遍历后设置是否点赞
+        for (TimeNestBo timeNestBo : timeNestBoList) {
+            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), 0));
+        }
+
+        Page<TimeNestBo> timeNestBoPage = new Page<TimeNestBo>(userLikesPage.getCurrent(), userLikesPage.getSize(), userLikesPage.getTotal()).setRecords(timeNestBoList);
+        timeNestBoPage.setRecords(timeNestBoList);
+        return timeNestBoPage;
+    }
+
     // 查询这个用户点赞的拾光纪
     private Map<Long, Integer> queryIsLike(long currentUserId, List<Long> timeNestIdList) {
         LambdaQueryWrapper<UserLikes> wrapper = new LambdaQueryWrapper<>();
