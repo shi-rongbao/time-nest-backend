@@ -268,7 +268,9 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         long currentUserId = StpUtil.getLoginIdAsLong();
         Page<UserLikes> userLikesPage = userLikesService.queryMyLikeTimeNestList(timeNestDto, currentUserId);
         List<Long> timeNestIdList = userLikesPage.getRecords().stream().map(UserLikes::getTimeNestId).collect(Collectors.toList());
-
+        if (CollectionUtils.isEmpty(timeNestIdList)) {
+            return new Page<>();
+        }
         Map<Long, Integer> likeMap = queryIsLike(currentUserId, timeNestIdList);
 
         // 根据timeNestIdList查询TimeNest

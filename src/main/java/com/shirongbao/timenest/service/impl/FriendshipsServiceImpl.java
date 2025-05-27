@@ -151,6 +151,11 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
             throw new RuntimeException("当前用户账号异常，添加失败~");
         }
 
+        // 不能添加自己为好友！
+        if (users.getId().equals(StpUtil.getLoginIdAsLong())) {
+            throw new RuntimeException("不能添加自己为好友~");
+        }
+
         // 要先判断这个用户是否是我的好友
         boolean isFriend = checkIsFriend(users.getId());
         if (isFriend) {
