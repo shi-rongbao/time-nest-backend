@@ -65,15 +65,15 @@ public class UserController {
     }
 
     // 发送邮箱验证码
-    @GetMapping("/sendEmailCode")
     @RateLimit(minuteLimit = 3, hourLimit = 20)
+    @GetMapping("/sendEmailCode")
     public Result<String> sendEmailCode(@RequestParam("email") String email) {
         return emailService.sendEmailCode(email);
     }
 
     // 登录
-    @PostMapping("/login")
     @RateLimit(minuteLimit = 3, hourLimit = 20)
+    @PostMapping("/login")
     public Result<String> login(@RequestBody @Validated({LoginValidation.class}) UsersDto request) {
         String token = userService.login(request);
         if (StringUtils.isBlank(token)) {
@@ -83,7 +83,7 @@ public class UserController {
     }
 
     // 登出
-    @RateLimit(minuteLimit = 3, hourLimit = 20)
+    @RateLimit
     @GetMapping("/logout")
     public Result<Boolean> logout() {
         userService.logout();

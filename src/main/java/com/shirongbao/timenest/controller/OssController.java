@@ -20,7 +20,7 @@ public class OssController {
 
     private final OssService ossService;
 
-    @RateLimit
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     @PostMapping("/upload")
     public String test(@RequestParam("file") MultipartFile file) throws IOException {
         return ossService.uploadAvatar(file);
