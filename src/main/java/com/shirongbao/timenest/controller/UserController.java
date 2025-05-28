@@ -83,7 +83,6 @@ public class UserController {
     }
 
     // 登出
-    @RateLimit
     @GetMapping("/logout")
     public Result<Boolean> logout() {
         userService.logout();
@@ -91,28 +90,24 @@ public class UserController {
     }
 
     // 用户上传头像
-    @RateLimit
     @PostMapping("/uploadAvatar")
     public Result<String> uploadAvatar(@RequestParam("file") MultipartFile file) throws IOException {
         return userService.uploadAvatar(file);
     }
 
     // 获取用户基本信息
-    @RateLimit
     @GetMapping("/getUserInfo")
     public Result<UsersVo> getUserInfo() {
         return Result.success(userService.getUserInfo());
     }
 
     // 修改基本信息
-    @RateLimit
     @PostMapping("/updateUserInfo")
     public Result<Boolean> updateUserInfo(@RequestBody UsersDto request) {
         return userService.updateUserInfo(request);
     }
 
     // 注销
-    @RateLimit
     @GetMapping("/deactivateRequest")
     public Result<Boolean> deactivateRequest() {
         userService.deactivateRequest();
@@ -120,7 +115,6 @@ public class UserController {
     }
 
     // 发送好友申请
-    @RateLimit
     @PostMapping("/sendFriendRequest")
     public Result<String> sendFriendRequest(@RequestBody @Validated({SentFriendRequest.class}) UsersDto usersDto) {
         UsersBo usersBo = UserConverter.INSTANCE.usersDtoToUsersBo(usersDto);
@@ -128,7 +122,6 @@ public class UserController {
     }
 
     // 获取未读通知
-    @RateLimit
     @GetMapping("/getUnreadNotifications")
     public Result<List<NotificationVo>> getUnreadNotifications() {
         long currentUserId = StpUtil.getLoginIdAsLong();
@@ -143,7 +136,6 @@ public class UserController {
     }
 
     // 标记为已读
-    @RateLimit
     @GetMapping("/markAsRead")
     public Result<Boolean> markAsRead(@RequestParam("noticeId") Long noticeId) {
         // 点击消息后将消息标记为已读
@@ -152,7 +144,6 @@ public class UserController {
     }
 
     // 接受/拒绝好友申请(处理好友申请)
-    @RateLimit
     @PostMapping("/processingFriendRequest")
     public Result<Boolean> processingFriendRequest(@RequestBody @Validated FriendRequestsDto friendRequestsDto) {
         Long friendRequestId = friendRequestsDto.getFriendRequestId();
@@ -161,7 +152,6 @@ public class UserController {
     }
 
     // 查看好友列表
-    @RateLimit
     @GetMapping("/getFriendList")
     public Result<List<UsersVo>> getFriendList() throws ExecutionException, InterruptedException {
         long currentUserId = StpUtil.getLoginIdAsLong();

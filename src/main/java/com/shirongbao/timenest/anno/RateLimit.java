@@ -20,11 +20,11 @@ public @interface RateLimit {
     /**
      * 分钟级限制次数
      */
-    int minuteLimit() default 20;
+    int minuteLimit() default 100;
 
     /**
      * 小时级限制次数
      */
-    int hourLimit() default 500;
+    int hourLimit() default 2000;
 
 }
