@@ -71,7 +71,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
             return Collections.emptyList();
         }
 
-        Map<Long, Integer> likeMap = queryIsLike(userId, timeNestList.stream().map(TimeNest::getId).collect(Collectors.toList()));
+        Map<Long, Integer> likeMap = queryIsLike(userId);
 
         // 转成boList并设置点赞标识与解锁天数
         List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestBoList(timeNestList);
@@ -114,7 +114,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
 
         // 获取通知好友列表
         String unlockToUserIds = timeNest.getUnlockToUserIds();
-        List<Long> userIdList = JSON.parseObject(unlockToUserIds, new TypeReference<List<Long>>() {
+        List<Long> userIdList = JSON.parseObject(unlockToUserIds, new TypeReference<>() {
         });
         if (CollectionUtils.isEmpty(userIdList)) {
             return;
@@ -189,7 +189,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         timeNestPage = baseMapper.selectPage(timeNestPage, wrapper);
         List<TimeNest> timeNestList = timeNestPage.getRecords();
 
-        Map<Long, Integer> likeMap = queryIsLike(currentUsersId, timeNestList.stream().map(TimeNest::getId).collect(Collectors.toList()));
+        Map<Long, Integer> likeMap = queryIsLike(currentUsersId);
 
         // 转成bo并设置是否点赞标识
         List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestBoList(timeNestList);
@@ -210,7 +210,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
 
         // 转成bo
         TimeNestBo timeNestBo = TimeNestConverter.INSTANCE.timeNestToTimeNestBo(timeNest);
-        List<Long> userIdList = JSON.parseObject(timeNest.getFriendIds(), new TypeReference<List<Long>>() {
+        List<Long> userIdList = JSON.parseObject(timeNest.getFriendIds(), new TypeReference<>() {
         });
         userIdList.add(timeNest.getUserId());
         timeNestBo.setFriendIdList(userIdList);
@@ -242,7 +242,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         }
 
         // 目前不能异步的去做，同步来做
-        Map<Long, Integer> likeMap = queryIsLike(currentUserId, timeNestIdList);
+        Map<Long, Integer> likeMap = queryIsLike(currentUserId);
 
         // 根据timeNestIdList查询TimeNest
         LambdaQueryWrapper<TimeNest> wrapper = new LambdaQueryWrapper<>();
@@ -271,7 +271,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         if (CollectionUtils.isEmpty(timeNestIdList)) {
             return new Page<>();
         }
-        Map<Long, Integer> likeMap = queryIsLike(currentUserId, timeNestIdList);
+        Map<Long, Integer> likeMap = queryIsLike(currentUserId);
 
         // 根据timeNestIdList查询TimeNest
         LambdaQueryWrapper<TimeNest> wrapper = new LambdaQueryWrapper<>();
@@ -294,7 +294,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     }
 
     // 查询这个用户点赞的拾光纪
-    private Map<Long, Integer> queryIsLike(long currentUserId, List<Long> timeNestIdList) {
+    private Map<Long, Integer> queryIsLike(long currentUserId) {
         LambdaQueryWrapper<UserLikes> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(UserLikes::getUserId, currentUserId);
         wrapper.eq(UserLikes::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
