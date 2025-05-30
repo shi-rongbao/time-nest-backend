@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.service.impl;
+package com.shirongbao.timenest.service.notification;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -6,7 +6,6 @@ import com.shirongbao.timenest.common.enums.NotificationIsReadEnum;
 import com.shirongbao.timenest.common.enums.NotificationTypeEnum;
 import com.shirongbao.timenest.dao.FriendRequestNotificationMapper;
 import com.shirongbao.timenest.pojo.entity.Notification;
-import com.shirongbao.timenest.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

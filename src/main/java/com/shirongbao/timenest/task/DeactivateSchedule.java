@@ -1,7 +1,7 @@
 package com.shirongbao.timenest.task;
 
 import com.shirongbao.timenest.pojo.entity.Users;
-import com.shirongbao.timenest.service.UserService;
+import com.shirongbao.timenest.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

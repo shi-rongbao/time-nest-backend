@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.service;
+package com.shirongbao.timenest.service.email;
 
 import com.shirongbao.timenest.common.entity.Result;
 

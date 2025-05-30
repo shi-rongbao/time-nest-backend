@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.service.impl;
+package com.shirongbao.timenest.service.auth.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
@@ -14,7 +14,7 @@ import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
-import com.shirongbao.timenest.service.UserService;
+import com.shirongbao.timenest.service.auth.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.utils.RedisUtil;
 import com.shirongbao.timenest.utils.SecurityUtil;

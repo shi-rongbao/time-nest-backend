@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.service.impl;
+package com.shirongbao.timenest.service.friend.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -15,10 +15,10 @@ import com.shirongbao.timenest.pojo.entity.FriendRequests;
 import com.shirongbao.timenest.pojo.entity.Friendships;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
-import com.shirongbao.timenest.service.FriendRequestsService;
-import com.shirongbao.timenest.service.FriendshipsService;
-import com.shirongbao.timenest.service.NotificationService;
-import com.shirongbao.timenest.service.UserService;
+import com.shirongbao.timenest.service.friend.FriendRequestsService;
+import com.shirongbao.timenest.service.friend.FriendshipsService;
+import com.shirongbao.timenest.service.notification.NotificationService;
+import com.shirongbao.timenest.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@ import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.LikeTypeEnum;
 import com.shirongbao.timenest.pojo.entity.TimeNestLikeCounts;
 import com.shirongbao.timenest.pojo.entity.UserLikes;
-import com.shirongbao.timenest.service.UserLikesService;
+import com.shirongbao.timenest.service.nest.UserLikesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

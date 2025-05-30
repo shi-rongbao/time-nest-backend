@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.service.impl;
+package com.shirongbao.timenest.service.nest.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,7 +7,7 @@ import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.dao.UserLikesMapper;
 import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.entity.UserLikes;
-import com.shirongbao.timenest.service.UserLikesService;
+import com.shirongbao.timenest.service.nest.UserLikesService;
 import org.springframework.stereotype.Service;
 
 /**

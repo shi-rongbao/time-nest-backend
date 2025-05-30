@@ -8,7 +8,7 @@ import com.shirongbao.timenest.converter.NotificationConverter;
 import com.shirongbao.timenest.pojo.bo.NotificationBo;
 import com.shirongbao.timenest.pojo.entity.Notification;
 import com.shirongbao.timenest.pojo.entity.Users;
-import com.shirongbao.timenest.service.UserService;
+import com.shirongbao.timenest.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

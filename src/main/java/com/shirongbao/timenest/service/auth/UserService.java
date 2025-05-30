@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.service;
+package com.shirongbao.timenest.service.auth;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.common.entity.Result;

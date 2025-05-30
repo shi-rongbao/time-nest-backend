@@ -1,8 +1,8 @@
-package com.shirongbao.timenest.service.impl;
+package com.shirongbao.timenest.service.email.impl;
 
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
-import com.shirongbao.timenest.service.EmailService;
+import com.shirongbao.timenest.service.email.EmailService;
 import com.shirongbao.timenest.utils.RedisUtil;
 import com.shirongbao.timenest.utils.VerificationCodeUtil;
 import lombok.RequiredArgsConstructor;

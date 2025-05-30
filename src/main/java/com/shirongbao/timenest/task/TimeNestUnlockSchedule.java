@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.UnlockedStatusEnum;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
-import com.shirongbao.timenest.service.TimeNestService;
+import com.shirongbao.timenest.service.nest.TimeNestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

@@ -2,7 +2,7 @@ package com.shirongbao.timenest.strategy.nest;
 
 import com.shirongbao.timenest.common.enums.NestTypeEnum;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
-import com.shirongbao.timenest.service.EmailService;
+import com.shirongbao.timenest.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

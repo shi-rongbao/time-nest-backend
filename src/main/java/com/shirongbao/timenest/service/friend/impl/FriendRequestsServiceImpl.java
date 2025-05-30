@@ -1,9 +1,9 @@
-package com.shirongbao.timenest.service.impl;
+package com.shirongbao.timenest.service.friend.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shirongbao.timenest.dao.FriendRequestsMapper;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
-import com.shirongbao.timenest.service.FriendRequestsService;
+import com.shirongbao.timenest.service.friend.FriendRequestsService;
 import org.springframework.stereotype.Service;
 
 /**
