@@ -25,16 +25,16 @@ public class RedisConstant {
 
     // ========== 聊天系统相关常量 ==========
 
-    // 所有在线用户集合
-    public static final String ONLINE_USERS_SET = "chat:online:users";
+    // WebSocket 在线用户集合
+    public static final String ONLINE_USERS_SET = "chat:websocket:online_users";
 
-    // 用户会话信息
-    public static final String USER_SESSION_PREFIX = "chat:user:session:";
+    // 用户 WebSocket 会话信息（Hash）
+    public static final String USER_SESSION_PREFIX = "chat:websocket:session:";
 
     // 会话到用户映射
     public static final String SESSION_USER_PREFIX = "chat:session:user:";
 
-    // 用户心跳时间
-    public static final String USER_HEARTBEAT_PREFIX = "chat:user:heartbeat:";
+    // 用户 WebSocket 心跳记录（String）
+    public static final String USER_HEARTBEAT_PREFIX = "chat:websocket:heartbeat:";
 
 }
