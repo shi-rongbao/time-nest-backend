@@ -91,6 +91,7 @@ public class UserController {
 
     // 用户上传头像
     @PostMapping("/uploadAvatar")
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     public Result<String> uploadAvatar(@RequestParam("file") MultipartFile file) throws IOException {
         return userService.uploadAvatar(file);
     }

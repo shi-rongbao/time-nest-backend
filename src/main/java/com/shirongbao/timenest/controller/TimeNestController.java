@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shirongbao.timenest.anno.RateLimit;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
@@ -59,6 +60,7 @@ public class TimeNestController {
 
     // 上传图片nest
     @PostMapping("/uploadImageNest")
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     public Result<String> uploadImageNest(@RequestParam("file") MultipartFile file) throws IOException {
         String imageUrl = timeNestService.uploadImageNest(file);
         return Result.success(imageUrl);
