@@ -42,4 +42,8 @@ public final class RedisConstant {
     /** 用户 WebSocket 心跳记录（String） */
     public static final String USER_HEARTBEAT_PREFIX = "chat:websocket:heartbeat:";
 
+    // ========== 微信登录相关常量 ==========
+    /** 微信登录验证码前缀 */
+    public static final String WX_LOGIN_VERIFY_CODE_PREFIX = "wx:login:verify:code:";
+
 }

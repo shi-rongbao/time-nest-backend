@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shirongbao.timenest.common.constant.TimeConstant;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.*;
@@ -14,6 +15,7 @@ import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
+import com.shirongbao.timenest.pojo.vo.VerifyCodeVo;
 import com.shirongbao.timenest.service.auth.UserService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.utils.RedisUtil;
@@ -244,6 +246,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         wrapper.eq(Users::getStatus, StatusEnum.NORMAL.getCode());
         List<Users> usersList = list(wrapper);
         return UserConverter.INSTANCE.usersListToUsersBoList(usersList);
+    }
+
+    @Override
+    public Result<VerifyCodeVo> getVerifyCode() {
+        Random random = new Random();
+        // 随机一个四位数(1000 到 9999)
+        int verifyCode = random.nextInt(9000) + 1000;
+
+        // 缓存
+        redisUtil.set(RedisConstant.WX_LOGIN_VERIFY_CODE_PREFIX, verifyCode + "", TimeConstant.EMAIL_CODE_EXPIRE_TIME);
+
+        VerifyCodeVo verifyCodeVo = new VerifyCodeVo();
+        verifyCodeVo.setVerifyCode(verifyCode);
+        verifyCodeVo.setSceneId(UUID.randomUUID().toString());
+        return Result.success(verifyCodeVo);
     }
 
     // 获取用户信息，最多执行三次递归

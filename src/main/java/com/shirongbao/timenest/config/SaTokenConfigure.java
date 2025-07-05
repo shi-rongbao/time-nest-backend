@@ -24,6 +24,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         "/test/**",
                         "/user/sendEmailCode",
                         "/user/login",
+                        "/wx/login/**",
                         "/user/register",
                         "/error");
     }

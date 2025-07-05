@@ -6,6 +6,7 @@ import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.Users;
 import com.shirongbao.timenest.pojo.dto.UsersDto;
 import com.shirongbao.timenest.pojo.vo.UsersVo;
+import com.shirongbao.timenest.pojo.vo.VerifyCodeVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -47,4 +48,8 @@ public interface UserService  extends IService<Users> {
 
     // 获取用户Bo列表
     List<UsersBo> getUsersBoList(List<Long> userIdList);
+
+    // 获取验证码(微信登录，简单4位数字验证码，并缓存)
+    Result<VerifyCodeVo> getVerifyCode();
+
 }
