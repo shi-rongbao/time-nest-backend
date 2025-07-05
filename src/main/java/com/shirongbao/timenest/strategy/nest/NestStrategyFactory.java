@@ -1,5 +1,6 @@
 package com.shirongbao.timenest.strategy.nest;
 
+import com.shirongbao.timenest.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-19
- * @description: nest策略工厂类
+ * @description: 拾光纪策略工厂类
  */
 @Component
 @RequiredArgsConstructor
@@ -21,8 +22,19 @@ public class NestStrategyFactory implements InitializingBean {
 
     private final Map<Integer, NestStrategy> nestStrategyMap = new HashMap<>();
 
-        public NestStrategy getStrategy(int code) {
-            return nestStrategyMap.get(code);
+    /**
+     * 根据类型码获取策略实现
+     *
+     * @param code 策略类型码
+     * @return 策略实现
+     * @throws BusinessException 当策略不存在时抛出
+     */
+    public NestStrategy getStrategy(int code) {
+        NestStrategy strategy = nestStrategyMap.get(code);
+        if (strategy == null) {
+            throw new BusinessException("不支持的拾光纪类型: " + code);
+        }
+        return strategy;
     }
 
     @Override

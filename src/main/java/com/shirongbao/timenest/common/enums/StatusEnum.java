@@ -27,7 +27,7 @@ public enum StatusEnum {
                 return value;
             }
         }
-        throw new RuntimeException("不存在的枚举 -> StatusEnum code:{" + code + "}");
+        throw new IllegalArgumentException("不存在的状态枚举，code: " + code);
     }
 
 }

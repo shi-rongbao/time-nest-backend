@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.strategy.nest;
 
 import com.shirongbao.timenest.common.enums.NestTypeEnum;
+import com.shirongbao.timenest.common.exception.BusinessException;
 import com.shirongbao.timenest.pojo.entity.TimeNest;
 import com.shirongbao.timenest.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author: ShiRongbao
  * @date: 2025-05-19
- * @description: 邮件nest
+ * @description: 邮件拾光纪策略实现
  */
 @Component
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class MailNest implements NestStrategy {
     public TimeNest createTimeNest(TimeNest timeNest) {
         String email = timeNest.getToEmail();
         if (StringUtils.isBlank(email)) {
-            throw new RuntimeException("创建拾光纪条目异常，选择邮件类型时邮箱不能为空！");
+            throw new BusinessException("选择邮件类型时邮箱不能为空");
         }
         timeNest.setToEmail(email);
         return timeNest;

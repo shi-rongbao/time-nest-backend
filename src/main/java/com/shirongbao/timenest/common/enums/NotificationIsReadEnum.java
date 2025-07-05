@@ -1,11 +1,12 @@
 package com.shirongbao.timenest.common.enums;
 
+import com.shirongbao.timenest.common.exception.BusinessException;
 import lombok.Getter;
 
 /**
  * @author: ShiRongbao
  * @date: 2025-04-17
- * @description: 通知是否读枚举类
+ * @description: 通知读取状态枚举类
  */
 @Getter
 public enum NotificationIsReadEnum {
@@ -27,7 +28,7 @@ public enum NotificationIsReadEnum {
                 return value;
             }
         }
-        throw new RuntimeException("不存在的枚举 -> NotificationIsReadEnum code:{" + code + "}");
+        throw new BusinessException("不存在的通知读取状态枚举，code: " + code);
     }
 
 }

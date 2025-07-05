@@ -29,6 +29,6 @@ public enum ResultCodeEnum {
                 return value;
             }
         }
-        throw new RuntimeException("不存在的枚举 -> ResultCodeEnum code:{" + code + "}");
+        throw new IllegalArgumentException("不存在的结果状态码: " + code);
     }
 }

@@ -6,10 +6,12 @@ import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shirongbao.timenest.common.constant.BusinessConstant;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.PublicStatusEnum;
 import com.shirongbao.timenest.common.enums.StatusEnum;
 import com.shirongbao.timenest.common.enums.UnlockedStatusEnum;
+import com.shirongbao.timenest.common.exception.BusinessException;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.dao.TimeNestMapper;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
@@ -26,6 +28,7 @@ import com.shirongbao.timenest.service.notification.NotificationService;
 import com.shirongbao.timenest.service.oss.OssService;
 import com.shirongbao.timenest.strategy.nest.NestStrategy;
 import com.shirongbao.timenest.strategy.nest.NestStrategyFactory;
+import com.shirongbao.timenest.utils.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -67,8 +70,8 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         wrapper.eq(TimeNest::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
         // 根据解锁日期排序
         wrapper.orderByAsc(TimeNest::getUnlockTime);
-        // 最多要6条即可！
-        wrapper.last("limit 6");
+        // 限制查询数量
+        wrapper.last("limit " + BusinessConstant.MAX_UNLOCKING_NEST_COUNT);
 
         List<TimeNest> timeNestList = list(wrapper);
         if (CollectionUtils.isEmpty(timeNestList)) {
@@ -81,12 +84,9 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestBoList(timeNestList);
         for (TimeNestBo timeNestBo : timeNestBoList) {
             // 计算还有几天解锁
-            int unlockDays = (int) ((timeNestBo.getUnlockTime().getTime() - System.currentTimeMillis()) / (1000 * 60 * 60 * 24));
-            // 别出现0天这种情况！
-            unlockDays += 1;
+            int unlockDays = TimeUtil.calculateUnlockDays(timeNestBo.getUnlockTime());
             timeNestBo.setUnlockDays(unlockDays);
-            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), 0));
-
+            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), BusinessConstant.NOT_LIKE_FLAG));
         }
 
         return timeNestBoList;
@@ -97,7 +97,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         // 先拿到这个nest
         TimeNest timeNest = getById(nestId);
         if (timeNest == null) {
-            throw new RuntimeException("当前数据异常，请稍后再试！");
+            throw new BusinessException("拾光纪不存在或已被删除");
         }
 
         // 设置解锁信息
@@ -198,7 +198,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         // 转成bo并设置是否点赞标识
         List<TimeNestBo> timeNestBoList = TimeNestConverter.INSTANCE.timeNestListToTimeNestBoList(timeNestList);
         for (TimeNestBo timeNestBo : timeNestBoList) {
-            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), 0));
+            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), BusinessConstant.NOT_LIKE_FLAG));
         }
 
         return new Page<TimeNestBo>(timeNestPage.getCurrent(), timeNestPage.getSize(), timeNestPage.getTotal()).setRecords(timeNestBoList);
@@ -260,7 +260,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
 
         // 遍历后设置是否点赞
         for (TimeNestBo timeNestBo : timeNestBoList) {
-            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), 0));
+            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), BusinessConstant.NOT_LIKE_FLAG));
         }
 
         timeNestBoPage.setRecords(timeNestBoList);
@@ -289,7 +289,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
 
         // 遍历后设置是否点赞
         for (TimeNestBo timeNestBo : timeNestBoList) {
-            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), 0));
+            timeNestBo.setIsLike(likeMap.getOrDefault(timeNestBo.getId(), BusinessConstant.NOT_LIKE_FLAG));
         }
 
         Page<TimeNestBo> timeNestBoPage = new Page<TimeNestBo>(userLikesPage.getCurrent(), userLikesPage.getSize(), userLikesPage.getTotal()).setRecords(timeNestBoList);
@@ -304,7 +304,7 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         wrapper.eq(UserLikes::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
         List<UserLikes> userLikes = userLikesService.list(wrapper);
         if (!CollectionUtils.isEmpty(userLikes)) {
-            return userLikes.stream().collect(Collectors.toMap(UserLikes::getTimeNestId, userLikes1 -> 1));
+            return userLikes.stream().collect(Collectors.toMap(UserLikes::getTimeNestId, userLikes1 -> BusinessConstant.LIKE_FLAG));
         }
         return new HashMap<>();
     }
@@ -323,28 +323,34 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
         return timeNestBo;
     }
 
-    // 基础校验
+    /**
+     * 基础校验
+     *
+     * @param timeNest 拾光纪实体
+     * @return true-不可访问，false-可访问
+     */
     private boolean basicCheck(TimeNest timeNest) {
         if (Objects.isNull(timeNest)) {
-            throw new RuntimeException("当前数据异常，请稍后再试！");
+            throw new BusinessException("拾光纪不存在或已被删除");
         }
 
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        boolean isOwner = timeNest.getUserId() == currentUserId;
+        boolean isUnlocked = timeNest.getUnlockedStatus() == UnlockedStatusEnum.UNLOCK.getCode();
+        boolean isPublic = timeNest.getPublicStatus() == PublicStatusEnum.PUBLIC.getCode();
+
         // 当前拾光纪还未解锁
-        if (timeNest.getUnlockedStatus() == UnlockedStatusEnum.LOCK.getCode()) {
+        if (!isUnlocked) {
             return true;
         }
 
         // 不是我创建的拾光纪，且还未公开，那么不可见！
-        if (timeNest.getUserId() != StpUtil.getLoginIdAsLong()
-                && timeNest.getPublicStatus() != PublicStatusEnum.PUBLIC.getCode()) {
-            // 不是这个用户的拾光纪，看不到的
-            throw new RuntimeException("当前数据异常，请稍后再试！");
+        if (!isOwner && !isPublic) {
+            throw new BusinessException("无权访问该拾光纪");
         }
 
-        // 不是我的，公开了，但未到时间，那么不可见！
-        return timeNest.getUserId() != StpUtil.getLoginIdAsLong()
-                && timeNest.getPublicStatus() != PublicStatusEnum.PUBLIC.getCode()
-                && timeNest.getPublicTime().before(new Date());
+        // 不是我的，公开了，但未到公开时间，那么不可见！
+        return !isOwner && timeNest.getPublicTime() != null && timeNest.getPublicTime().after(new Date());
     }
 
 }

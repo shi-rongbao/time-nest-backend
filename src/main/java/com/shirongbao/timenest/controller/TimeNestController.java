@@ -9,6 +9,7 @@ import com.shirongbao.timenest.pojo.dto.TimeNestDto;
 import com.shirongbao.timenest.pojo.vo.TimeNestVo;
 import com.shirongbao.timenest.service.nest.TimeNestLikeCountsService;
 import com.shirongbao.timenest.service.nest.TimeNestService;
+import com.shirongbao.timenest.utils.PageUtil;
 import com.shirongbao.timenest.validation.CreateNestValidation;
 import com.shirongbao.timenest.validation.LikeTimeNestValidation;
 import com.shirongbao.timenest.validation.TimeNestIdValidation;
@@ -70,11 +71,8 @@ public class TimeNestController {
     @PostMapping("/queryMyTimeNestList")
     public Result<Page<TimeNestVo>> queryMyTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNestBo> timeNestBoPage = timeNestService.queryMyTimeNestList(timeNestDto);
-        // 转成vo
-        List<TimeNestBo> timeNestList = timeNestBoPage.getRecords();
-        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestList);
-        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestBoPage.getCurrent(), timeNestBoPage.getSize(), timeNestBoPage.getTotal());
-        timeNestVoPage.setRecords(timeNestVoList);
+        Page<TimeNestVo> timeNestVoPage = PageUtil.convertPage(timeNestBoPage,
+            TimeNestConverter.INSTANCE::timeNestBoListToTimeNestVoList);
         return Result.success(timeNestVoPage);
     }
 
@@ -93,10 +91,8 @@ public class TimeNestController {
     @PostMapping("/queryPublicTimeNestList")
     public Result<Page<TimeNestVo>> queryPublicTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNestBo> timeNestBoPage = timeNestService.queryPublicTimeNestList(timeNestDto);
-        List<TimeNestBo> timeNestList = timeNestBoPage.getRecords();
-        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestList);
-        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestBoPage.getCurrent(), timeNestBoPage.getSize(), timeNestBoPage.getTotal());
-        timeNestVoPage.setRecords(timeNestVoList);
+        Page<TimeNestVo> timeNestVoPage = PageUtil.convertPage(timeNestBoPage,
+            TimeNestConverter.INSTANCE::timeNestBoListToTimeNestVoList);
         return Result.success(timeNestVoPage);
     }
 
@@ -113,10 +109,8 @@ public class TimeNestController {
     @PostMapping("/queryMyLikeTimeNestList")
     public Result<Page<TimeNestVo>> queryMyLikeTimeNestList(@RequestBody TimeNestDto timeNestDto) {
         Page<TimeNestBo> timeNestBoPage = timeNestService.queryMyLikeTimeNestList(timeNestDto);
-        List<TimeNestBo> timeNestList = timeNestBoPage.getRecords();
-        List<TimeNestVo> timeNestVoList = TimeNestConverter.INSTANCE.timeNestBoListToTimeNestVoList(timeNestList);
-        Page<TimeNestVo> timeNestVoPage = new Page<>(timeNestBoPage.getCurrent(), timeNestBoPage.getSize(), timeNestBoPage.getTotal());
-        timeNestVoPage.setRecords(timeNestVoList);
+        Page<TimeNestVo> timeNestVoPage = PageUtil.convertPage(timeNestBoPage,
+            TimeNestConverter.INSTANCE::timeNestBoListToTimeNestVoList);
         return Result.success(timeNestVoPage);
     }
 
