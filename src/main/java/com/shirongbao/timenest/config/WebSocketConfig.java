@@ -1,12 +1,8 @@
 package com.shirongbao.timenest.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shirongbao.timenest.service.chat.ChatMessageService;
-import com.shirongbao.timenest.websocket.ChatWebSocketHandler;
-import com.shirongbao.timenest.interceptor.SaTokenWebSocketInterceptor;
-import com.shirongbao.timenest.service.chat.UserPresenceService;
+import com.shirongbao.timenest.interceptor.LoginHandshakeInterceptor;
+import com.shirongbao.timenest.websocket.LoginWebSocketHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -22,25 +18,22 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final SaTokenWebSocketInterceptor saTokenWebSocketInterceptor;
+    private final LoginWebSocketHandler loginWebSocketHandler;
 
-    private final ObjectMapper objectMapper;
+    private final LoginHandshakeInterceptor loginHandshakeInterceptor;
 
-    private final UserPresenceService userPresenceService;
-
-    private final ChatMessageService chatMessageService;
-
+    /**
+     * 注册WebSocket处理器
+     *
+     * @param registry 处理器注册器
+     */
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        // 聊天 WebSocket 端点
-        registry.addHandler(chatWebSocketHandler(), "/chat")
-                .addInterceptors(saTokenWebSocketInterceptor)
+        // 注册处理器，并指定处理该处理器的endpoint路径
+        registry.addHandler(loginWebSocketHandler, "/ws/wx/login")
+                // 添加握手拦截器，用于在握手阶段传递参数
+                .addInterceptors(loginHandshakeInterceptor)
+                // 设置允许跨域的源，"*"表示允许所有源。在生产环境中应配置为具体的域名。
                 .setAllowedOrigins("*");
-    }
-
-    @Bean
-    public ChatWebSocketHandler chatWebSocketHandler() {
-        // 在这里创建 ChatWebSocketHandler 实例，并注入它所需的依赖
-        return new ChatWebSocketHandler(objectMapper, userPresenceService, chatMessageService);
     }
 }
