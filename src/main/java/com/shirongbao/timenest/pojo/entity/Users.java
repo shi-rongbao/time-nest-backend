@@ -21,6 +21,9 @@ public class Users {
     // 唯一不重复用户名
     private String userAccount;
 
+    // 用户微信openId
+    private String openId;
+
     // 用户昵称
     private String nickName;
 

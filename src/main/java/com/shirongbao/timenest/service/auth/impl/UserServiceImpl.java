@@ -129,14 +129,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
         if (SecurityUtil.verifyPassword(password, storedHash, storedSalt)) {
             // 校验成功后登录并返回token
-            StpUtil.login(users.getId());
-            SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-            String tokenValue = tokenInfo.getTokenValue();
-            // 把用户基础信息放到缓存里
-            setUserCache(tokenValue);
-            // 判断是否取消注销
-            cancelDeactivateRequest(users);
-            return tokenValue;
+            return loginReturnToken(users);
         }
 
         return null;
@@ -250,17 +243,59 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
     @Override
     public Result<VerifyCodeVo> getVerifyCode() {
+        String sceneId = UUID.randomUUID().toString();
+
         Random random = new Random();
         // 随机一个四位数(1000 到 9999)
         int verifyCode = random.nextInt(9000) + 1000;
 
         // 缓存
-        redisUtil.set(RedisConstant.WX_LOGIN_VERIFY_CODE_PREFIX, verifyCode + "", TimeConstant.EMAIL_CODE_EXPIRE_TIME);
+        redisUtil.set(RedisConstant.WX_LOGIN_VERIFY_CODE_PREFIX + verifyCode, sceneId, TimeConstant.EMAIL_CODE_EXPIRE_TIME);
 
         VerifyCodeVo verifyCodeVo = new VerifyCodeVo();
         verifyCodeVo.setVerifyCode(verifyCode);
-        verifyCodeVo.setSceneId(UUID.randomUUID().toString());
+        verifyCodeVo.setSceneId(sceneId);
         return Result.success(verifyCodeVo);
+    }
+
+    @Override
+    public String wxLogin(String openId) {
+        LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Users::getOpenId, openId);
+        wrapper.eq(Users::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+        Users users = getOne(wrapper);
+        if (ObjectUtils.isEmpty(users)) {
+            // 用户不存在，去注册
+            return wxRegister(openId);
+        }
+
+        return loginReturnToken(users);
+    }
+
+    // 微信注册用户
+    private String wxRegister(String openId) {
+        // 按规则生成用户默认昵称(tc_nickname_${date})
+        String nickName = "tc_nickname_" + System.currentTimeMillis();
+        Users users = new Users();
+        users.setNickName(nickName);
+        users.setOpenId(openId);
+        // 设置默认的头像
+        users.setAvatarUrl("https://time-capsule-rongbao.oss-rg-china-mainland.aliyuncs.com/avatar/1c829f2997583dbe2f8338c1b5499da4.jpg");
+        save(users);
+
+        return loginReturnToken(users);
+    }
+
+    // 登录，然后返回token
+    private String loginReturnToken(Users users) {
+        StpUtil.login(users.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        String tokenValue = tokenInfo.getTokenValue();
+        // 把用户基础信息放到缓存里
+        setUserCache(tokenValue);
+        // 判断是否取消注销
+        cancelDeactivateRequest(users);
+        return tokenValue;
     }
 
     // 获取用户信息，最多执行三次递归

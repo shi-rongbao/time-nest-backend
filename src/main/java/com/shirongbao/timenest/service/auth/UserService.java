@@ -52,4 +52,7 @@ public interface UserService  extends IService<Users> {
     // 获取验证码(微信登录，简单4位数字验证码，并缓存)
     Result<VerifyCodeVo> getVerifyCode();
 
+    // 微信登录
+    String wxLogin(String openId);
+
 }
