@@ -47,7 +47,7 @@ public class LoginController {
     }
 
     // 获取验证码(微信登录，简单4位数字验证码，也要缓存5分钟)
-    @RateLimit(minuteLimit = 1, hourLimit = 20)
+    @RateLimit(minuteLimit = 3, hourLimit = 20)
     @GetMapping("/getVerifyCode")
     public Result<VerifyCodeVo> getVerifyCode(){
         return userService.getVerifyCode();
