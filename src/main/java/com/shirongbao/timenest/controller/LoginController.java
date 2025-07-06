@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.controller.wx;
+package com.shirongbao.timenest.controller;
 
 import com.shirongbao.timenest.anno.RateLimit;
 import com.shirongbao.timenest.common.entity.Result;

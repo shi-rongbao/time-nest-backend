@@ -1,4 +1,4 @@
-package com.shirongbao.timenest.config.limit;
+package com.shirongbao.timenest.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

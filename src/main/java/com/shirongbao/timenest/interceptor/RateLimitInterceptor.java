@@ -2,7 +2,7 @@ package com.shirongbao.timenest.interceptor;
 
 import com.shirongbao.timenest.anno.RateLimit;
 import com.shirongbao.timenest.common.entity.RateLimitInfo;
-import com.shirongbao.timenest.config.limit.GlobalRateLimitProperties;
+import com.shirongbao.timenest.config.GlobalRateLimitProperties;
 import com.shirongbao.timenest.service.limit.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -3,7 +3,7 @@ package com.shirongbao.timenest.service.oss.impl;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.ObjectMetadata;
-import com.shirongbao.timenest.config.properties.OssProperties;
+import com.shirongbao.timenest.config.OssProperties;
 import com.shirongbao.timenest.service.oss.OssService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

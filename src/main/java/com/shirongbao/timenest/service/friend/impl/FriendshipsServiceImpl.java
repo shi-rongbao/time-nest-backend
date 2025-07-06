@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
   * @author: ShiRongbao
@@ -122,7 +123,7 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
         allFutures.join();
 
         // 执行完就可以返回了
-        return usersVoList;
+        return usersVoList.stream().sorted().collect(Collectors.toList());
     }
 
     @Override
