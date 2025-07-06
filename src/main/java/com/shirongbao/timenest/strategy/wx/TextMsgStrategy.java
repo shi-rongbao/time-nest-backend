@@ -39,7 +39,7 @@ public class TextMsgStrategy implements MsgTypeStrategy {
 
         // 如果不是纯数字，提示去网站获取验证码
         if (!content.matches("\\d+")) {
-            return "【拾光纪】请您登录官网<a href=\"http://devsflow.cn\">获取验证码~";
+            return "【拾光纪】请您登录官网：http://devsflow.cn 后获取验证码~";
         }
 
         Object value = redisUtils.get(RedisConstant.WX_LOGIN_VERIFY_CODE_PREFIX + content);
@@ -56,7 +56,7 @@ public class TextMsgStrategy implements MsgTypeStrategy {
         String fromUserName = requestBodyMap.get("FromUserName");
         String token = userService.wxLogin(fromUserName);
         loginWebSocketHandler.sendMessageToClient(sceneId, token);
-        return "【拾光纪】欢迎您登录成功！";
+        return "【拾光纪】恭喜您登录成功！";
     }
 
 }

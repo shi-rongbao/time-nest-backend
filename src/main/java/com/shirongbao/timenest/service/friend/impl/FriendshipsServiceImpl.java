@@ -123,7 +123,7 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
         allFutures.join();
 
         // 执行完就可以返回了
-        return usersVoList.stream().sorted().collect(Collectors.toList());
+        return usersVoList;
     }
 
     @Override

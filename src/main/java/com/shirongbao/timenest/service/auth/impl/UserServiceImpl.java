@@ -9,6 +9,7 @@ import com.shirongbao.timenest.common.constant.TimeConstant;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.enums.*;
+import com.shirongbao.timenest.common.exception.BusinessException;
 import com.shirongbao.timenest.converter.UserConverter;
 import com.shirongbao.timenest.dao.UserMapper;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -181,7 +183,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         }
 
         // 更新用户信息
-        updateById(users);
+        try {
+            updateById(users);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException("用户名或手机号已经存在，请重新输入！");
+        }
 
         // 删掉用户缓存
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
