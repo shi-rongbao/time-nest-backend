@@ -9,6 +9,7 @@ import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.ProcessingResultEnum;
 import com.shirongbao.timenest.common.enums.ProcessingStatusEnum;
 import com.shirongbao.timenest.common.enums.StatusEnum;
+import com.shirongbao.timenest.common.exception.BusinessException;
 import com.shirongbao.timenest.dao.FriendshipsMapper;
 import com.shirongbao.timenest.pojo.bo.UsersBo;
 import com.shirongbao.timenest.pojo.entity.FriendRequests;
@@ -154,13 +155,13 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
 
         // 不能添加自己为好友！
         if (users.getId().equals(StpUtil.getLoginIdAsLong())) {
-            throw new RuntimeException("不能添加自己为好友~");
+            throw new BusinessException("不能添加自己为好友~");
         }
 
         // 要先判断这个用户是否是我的好友
         boolean isFriend = checkIsFriend(users.getId());
         if (isFriend) {
-            throw new RuntimeException("你们已经是好友啦，不需要再添加了~");
+            throw new BusinessException("你们已经是好友啦，不需要再添加了~");
         }
 
         Long receiverUserId = users.getId();
