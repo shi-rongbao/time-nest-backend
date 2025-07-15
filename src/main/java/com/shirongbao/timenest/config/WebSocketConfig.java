@@ -1,7 +1,9 @@
 package com.shirongbao.timenest.config;
 
+import com.shirongbao.timenest.interceptor.AuthHandshakeInterceptor;
 import com.shirongbao.timenest.interceptor.LoginHandshakeInterceptor;
 import com.shirongbao.timenest.websocket.LoginWebSocketHandler;
+import com.shirongbao.timenest.websocket.MainWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -18,22 +20,27 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
 
+    // 登录组件
     private final LoginWebSocketHandler loginWebSocketHandler;
 
     private final LoginHandshakeInterceptor loginHandshakeInterceptor;
 
-    /**
-     * 注册WebSocket处理器
-     *
-     * @param registry 处理器注册器
-     */
+    // 注入新的主通道（聊天、通知）组件
+    private final MainWebSocketHandler mainWebSocketHandler;
+
+    private final AuthHandshakeInterceptor authHandshakeInterceptor;
+
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        // 注册处理器，并指定处理该处理器的endpoint路径
+        // 1.用于扫码登录的临时连接端点
         registry.addHandler(loginWebSocketHandler, "/ws/wx/login")
-                // 添加握手拦截器，用于在握手阶段传递参数
                 .addInterceptors(loginHandshakeInterceptor)
-                // 设置允许跨域的源，"*"表示允许所有源。在生产环境中应配置为具体的域名。
+                .setAllowedOrigins("*");
+
+        // 2.注册用于处理所有已登录用户实时业务的主通道端点
+        registry.addHandler(mainWebSocketHandler, "/ws/user")
+                .addInterceptors(authHandshakeInterceptor)
                 .setAllowedOrigins("*");
     }
 }
