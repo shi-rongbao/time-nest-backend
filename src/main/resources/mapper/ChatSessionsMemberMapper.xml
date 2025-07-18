@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shirongbao.timenest.dao.ChatSessionMembersMapper">
+    
+    <resultMap id="ChatSessionsMembersMap" type="com.shirongbao.timenest.pojo.entity.ChatSessionMembers">
+        <id property="id" column="id"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="unreadCount" column="unread_count"/>
+        <result property="lastAckTime" column="last_ack_time"/>
+        <result property="role" column="role"/>
+        <result property="joinedAt" column="joined_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="querySessions" resultType="com.shirongbao.timenest.pojo.bo.ChatSessionBo">
+        select cs.id as sessionId,
+        cs.session_type as sessionType,
+        cs.group_name as groupName,
+        cs.group_avatar as groupAvatar,
+        cs.last_message_content as lastMessageContent,
+        cs.last_message_time as lastMessageTime,
+        csm.unread_count as unreadCount
+        from chat_sessions_members csm
+        inner join chat_sessions cs on csm.session_id = cs.id
+        <where>
+            csm.user_id = #{chatSessionDto.userId}
+            and cs.is_deleted = 0
+            <if test="chatSessionDto.sessionType != null">
+                and cs.session_type = #{chatSessionDto.sessionType}
+            </if>
+            <if test="chatSessionDto.keyword != null and chatSessionDto.keyword != ''">
+                and (
+                (cs.session_type = 2 and cs.group_name LIKE CONCAT('%', #{chatSessionDto.keyword}, '%'))
+                or
+                (cs.session_type = 1 and exists (
+                select 1 from chat_sessions_members csm2
+                inner join users u on csm2.user_id = u.id
+                where csm2.session_id = cs.id
+                and csm2.user_id != #{chatSessionDto.userId}
+                and u.nick_name LIKE CONCAT('%', #{chatSessionDto.keyword}, '%')
+                ))
+                )
+            </if>
+        </where>
+        order by cs.last_message_time desc
+    </select>
+
+    <select id="queryTargetUsersWithUserInfo" resultType="com.shirongbao.timenest.pojo.bo.ChatSessionTargetUserBo">
+        select csm.session_id as sessionId,
+        csm.user_id as targetUserId,
+        u.nick_name as targetNickName,
+        u.avatar_url as targetAvatarUrl
+        from chat_sessions_members csm
+        inner join users u on csm.user_id = u.id
+        where csm.session_id in
+        <foreach collection="sessionIds" item="sessionId" open="(" close=")" separator=",">
+            #{sessionId}
+        </foreach>
+        and csm.user_id != #{currentUserId}
+    </select>
+
+    <select id="queryTargetUser" resultType="com.shirongbao.timenest.pojo.bo.ChatSessionBo">
+        select cs.id as sessionId,
+        cs.session_type as sessionType,
+        cs.last_message_content as lastMessageContent,
+        cs.last_message_time as lastMessageTime,
+        csm.unread_count as unreadCount,
+        csm.user_id as targetUserId
+        from chat_sessions_members csm
+        inner join chat_sessions cs
+        on csm.session_id = cs.id
+        <where>
+            session_id in
+            <foreach collection="singleSessionsIdList" item="sessionId" open="(" close=")" separator=",">
+                #{sessionId}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

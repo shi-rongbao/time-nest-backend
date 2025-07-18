@@ -151,9 +151,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         updateById(users);
 
         // 删掉用户缓存
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        String tokenValue = tokenInfo.getTokenValue();
-        removeUserCache(tokenValue);
+        removeUserCache(StpUtil.getLoginIdAsString());
         return Result.success(url);
     }
 
@@ -190,9 +188,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         }
 
         // 删掉用户缓存
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        String tokenValue = tokenInfo.getTokenValue();
-        removeUserCache(tokenValue);
+        removeUserCache(StpUtil.getLoginIdAsString());
         return Result.success();
     }
 
@@ -200,7 +196,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     public void logout() {
         StpUtil.logout();
         // 把当前token的缓存移除
-        removeUserCache(StpUtil.getTokenInfo().getTokenValue());
+        removeUserCache(StpUtil.getLoginIdAsString());
     }
 
     @Override
@@ -278,6 +274,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         return loginReturnToken(users);
     }
 
+    @Override
+    public Users getUsersByCache(String userIdAsString) {
+        Users userCache = getUserCache(userIdAsString);
+        if (ObjectUtils.isEmpty(userCache)) {
+            setUserCache(userIdAsString);
+            return getUserCache(userIdAsString);
+        }
+
+        return userCache;
+    }
+
     // 微信注册用户
     private String wxRegister(String openId) {
         // 按规则生成用户默认昵称(tc_nickname_${date})
@@ -294,11 +301,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
     // 登录，然后返回token
     private String loginReturnToken(Users users) {
-        StpUtil.login(users.getId());
+        Long userId = users.getId();
+        StpUtil.login(userId);
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         String tokenValue = tokenInfo.getTokenValue();
         // 把用户基础信息放到缓存里
-        setUserCache(tokenValue);
+        setUserCache(userId.toString());
         // 判断是否取消注销
         cancelDeactivateRequest(users);
         return tokenValue;
@@ -310,14 +318,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             throw new RuntimeException("获取用户信息失败，请稍后再试或联系管理员！");
         }
 
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        String tokenValue = tokenInfo.getTokenValue();
-        Users users = getUserCache(tokenValue);
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        Users users = getUserCache(loginIdAsString);
 
         // 缓存里没有，尝试重新加载缓存并重试
         if (ObjectUtils.isEmpty(users)) {
             try {
-                setUserCache(tokenValue);
+                setUserCache(loginIdAsString);
             } catch (Exception e) {
                 // 可以记录日志，如 log.warn("设置用户缓存失败", e);
                 return getUserInfoWithRetry(retryTimes + 1);
@@ -341,10 +348,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     }
 
     // 将用户基础信息放到缓存里
-    private void setUserCache(String tokenValue) {
-        String key = redisUtil.buildKey(RedisConstant.USER_CACHE_PREFIX, tokenValue);
+    private void setUserCache(String userId) {
+        String key = redisUtil.buildKey(RedisConstant.USER_CACHE_PREFIX, userId);
         // 查到这个用户信息
-        Users users = getById(StpUtil.getLoginIdAsLong());
+        Users users = getById(userId);
         // 序列化后缓存
         String usersString = JSON.toJSONString(users);
         // 缓存30天
@@ -352,14 +359,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     }
 
     // 将用户基础信息缓存移除
-    private void removeUserCache(String tokenValue) {
-        String key = redisUtil.buildKey(RedisConstant.USER_CACHE_PREFIX, tokenValue);
+    private void removeUserCache(String userId) {
+        String key = redisUtil.buildKey(RedisConstant.USER_CACHE_PREFIX, userId);
         redisUtil.del(key);
     }
 
     // 从缓存中获取用户对象
-    private Users getUserCache(String tokenValue) {
-        String key = redisUtil.buildKey(RedisConstant.USER_CACHE_PREFIX, tokenValue);
+    private Users getUserCache(String userId) {
+        String key = redisUtil.buildKey(RedisConstant.USER_CACHE_PREFIX, userId);
         Object usersObject = redisUtil.get(key);
         if (ObjectUtils.isEmpty(usersObject)) {
             return null;

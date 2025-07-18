@@ -40,3 +40,6 @@ build/
 ### 配置文件 ###
 *.properties
 src/main/resources/application.yml
+
+### sql 文件 ###
+*.sql

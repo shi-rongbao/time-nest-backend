@@ -26,4 +26,6 @@ public interface UserConverter {
     UsersBo usersDtoToUsersBo(UsersDto usersDto);
 
     List<UsersBo> usersListToUsersBoList(List<Users> usersList);
+
+    Users usersVoToEntity(UsersVo userInfo);
 }

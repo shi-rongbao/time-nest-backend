@@ -55,4 +55,6 @@ public interface UserService  extends IService<Users> {
     // 微信登录
     String wxLogin(String openId);
 
+    // 根据stringUserId从缓存获取用户
+    Users getUsersByCache(String userIdAsString);
 }

@@ -1,39 +1,35 @@
 package com.shirongbao.timenest.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
  * @author: ShiRongbao
- * @date: 2025-05-15
+ * @date: 2025-07-17
  * @description: 用户实体类
  */
 @Data
 public class Users {
-
     // 主键
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     // 唯一不重复用户名
     private String userAccount;
 
-    // 用户微信openId
+    // 微信open_id
     private String openId;
 
     // 用户昵称
     private String nickName;
 
-    // 手机号(加密)
+    // 手机号（加密）
     private String phone;
 
     // 邮箱
     private String email;
 
-    // 密码(加密)
+    // 密码（加密）
     private String password;
 
     // 用户头像url
@@ -45,7 +41,7 @@ public class Users {
     // 用户简介
     private String introduce;
 
-    // 申请注销：1-已申请；0-未申请
+    // 注销申请：1-已申请；0-未申请
     private Integer deactivationRequested;
 
     // 申请注销时间
@@ -59,5 +55,4 @@ public class Users {
 
     // 更新时间
     private Date updatedAt;
-
 }

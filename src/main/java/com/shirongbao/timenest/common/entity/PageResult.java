@@ -27,10 +27,6 @@ public class PageResult<T> {
 
     private List<T> records = Collections.emptyList();
 
-    private Integer start = 0;
-
-    private Integer end = 0;
-
     public void setRecords(List<T> records) {
         this.records = records;
         if (records != null && !records.isEmpty()) {
@@ -45,10 +41,16 @@ public class PageResult<T> {
         } else {
             this.totalPages = 0;
         }
-
-        this.start = (this.pageNum > 0 ? (this.pageNum - 1) * this.pageSize : 0) + 1;
-        this.end = (this.start - 1 + this.pageSize * (this.pageNum > 0 ? 1 : 0));
     }
 
+    public PageResult() {}
+
+    public PageResult(List<T> records, int total, int pageNum, int pageSize) {
+        this.records = records;
+        this.total = total;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        this.totalPages = (int) Math.ceil((double) total / pageSize);
+    }
 
 }
