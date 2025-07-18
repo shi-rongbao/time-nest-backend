@@ -6,13 +6,8 @@
     <resultMap id="ChatSessionVOMap" type="com.shirongbao.timenest.pojo.vo.ChatSessionVo">
         <id property="sessionId" column="id"/>
         <result property="sessionType" column="session_type"/>
-        <result property="groupName" column="group_name"/>
-        <result property="groupAvatar" column="group_avatar"/>
         <result property="lastMessageContent" column="last_message_content"/>
         <result property="lastMessageTime" column="last_message_time"/>
-        <result property="lastMessageType" column="message_type"/>
-        <result property="lastSenderId" column="sender_id"/>
-        <result property="lastSenderName" column="sender_name"/>
         <result property="unreadCount" column="unread_count"/>
     </resultMap>
 
