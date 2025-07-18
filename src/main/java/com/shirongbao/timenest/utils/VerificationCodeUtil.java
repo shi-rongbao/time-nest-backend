@@ -7,7 +7,9 @@ import java.util.Random;
  * @date: 2025-05-15
  * @description: 验证码工具类
  */
-public class VerificationCodeUtil {
+public final class VerificationCodeUtil {
+
+    private VerificationCodeUtil() {}
 
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final Random RANDOM = new Random();

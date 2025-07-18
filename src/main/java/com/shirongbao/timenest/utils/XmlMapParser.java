@@ -17,7 +17,9 @@ import java.util.Map;
  * XML解析工具类，用于将XML文档解析为简单的Map<String, String>结构
  * 可以正确处理CDATA部分
  */
-public class XmlMapParser {
+public final class XmlMapParser {
+
+    private XmlMapParser() {}
 
     /**
      * 将XML字符串解析为Map<String, String>
@@ -83,38 +85,4 @@ public class XmlMapParser {
         }
     }
 
-    /**
-     * 使用示例
-     */
-    public static void main(String[] args) {
-        try {
-            // 示例XML字符串，包含CDATA部分
-            String xmlString =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-                            "<xml>\n" +
-                            "    <ToUserName><![CDATA[gh_555e84dae86f]]></ToUserName>\n" +
-                            "    <FromUserName><![CDATA[o5lTU7dCrSvDLSiV3TLEzIFIt4r8]]></FromUserName>\n" +
-                            "    <CreateTime>1745764979</CreateTime>\n" +
-                            "    <MsgType><![CDATA[text]]></MsgType>\n" +
-                            "    <Content><![CDATA[你好呀]]></Content>\n" +
-                            "    <MsgId>24993344977324927</MsgId>\n" +
-                            "</xml>";
-
-            Map<String, String> resultMap = parseXmlToMap(xmlString);
-
-            // 打印结果
-            System.out.println("XML解析结果:");
-            for (Map.Entry<String, String> entry : resultMap.entrySet()) {
-                System.out.println(entry.getKey() + " = " + entry.getValue());
-            }
-
-            // 展示如何获取特定值
-            System.out.println("\n获取特定值示例:");
-            System.out.println("消息类型: " + resultMap.get("MsgType"));
-            System.out.println("消息内容: " + resultMap.get("Content"));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

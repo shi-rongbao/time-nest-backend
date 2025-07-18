@@ -9,7 +9,10 @@ import java.security.NoSuchAlgorithmException;
  * @date: 2025-04-27
  * @description:
  */
-public class SHA1Utils {
+public final class SHA1Utils {
+
+    private SHA1Utils() {}
+
     /**
      * Generates a SHA1 hash from the provided parameters
      *
@@ -61,19 +64,6 @@ public class SHA1Utils {
             hexString.append(hex);
         }
         return hexString.toString();
-    }
-
-    /**
-     * Example usage of the SHA1 utility class
-     */
-    public static void main(String[] args) {
-        String token = "your_token";
-        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
-        String nonce = "random_nonce_string";
-        String encrypt = "data_to_encrypt";
-
-        String signature = getSHA1(token, timestamp, nonce, encrypt);
-        System.out.println("Generated SHA1 signature: " + signature);
     }
 
 }

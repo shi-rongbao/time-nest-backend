@@ -13,12 +13,14 @@ import java.security.SecureRandom;
  * @date: 2025-05-15
  * @description: 安全工具类，用于加密密码和加密，解密手机号。
  */
-public class SecurityUtil {
+public final class SecurityUtil {
+
+    private SecurityUtil() {}
 
     private static final String PASSWORD_HASH_ALGORITHM = "SHA-256";
     private static final int SALT_LENGTH = 16; // 盐值的长度，单位为字节
     private static final String PHONE_ENCRYPTION_ALGORITHM = "AES";
-    // 请务必更换成你自己的 16/24/32 字节密钥
+    // 只能使用 16/24/32 字节密钥
     private static final String PHONE_ENCRYPTION_KEY_STRING = "a1b2c3d4e5f678901234567890abcdef";
 
     /**
