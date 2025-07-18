@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shirongbao.timenest.dao.ChatSessionMembersMapper">
+<mapper namespace="com.shirongbao.timenest.dao.ChatSessionsMembersMapper">
     
-    <resultMap id="ChatSessionsMembersMap" type="com.shirongbao.timenest.pojo.entity.ChatSessionMembers">
+    <resultMap id="ChatSessionsMembersMap" type="com.shirongbao.timenest.pojo.entity.ChatSessionsMembers">
         <id property="id" column="id"/>
         <result property="sessionId" column="session_id"/>
         <result property="userId" column="user_id"/>
@@ -77,6 +77,27 @@
                 #{sessionId}
             </foreach>
         </where>
+    </select>
+
+    <select id="querySingleSessionWithUserId" resultType="com.shirongbao.timenest.pojo.bo.ChatSessionBo">
+        select
+            cs.id as sessionId,
+            cs.session_type as sessionType,
+            cs.last_message_content as lastMessageContent,
+            cs.last_message_time as lastMessageTime,
+            other_user.nick_name as displayName,
+            other_user.avatar_url as displayAvatar
+        from chat_sessions cs
+        -- 找到当前用户所在的会话
+        inner join chat_sessions_members current_csm on cs.id = current_csm.session_id
+                                                            and current_csm.user_id = #{currentUserId}
+        -- 找到对方用户所在的会话
+        inner join chat_sessions_members other_csm on cs.id = other_csm.session_id
+                                                          and other_csm.user_id = #{targetId}
+        -- 关联对方用户的信息
+        inner join users other_user on other_csm.user_id = other_user.id
+        where cs.session_type = 1 and cs.is_deleted = 0
+        limit 1
     </select>
 
 </mapper>

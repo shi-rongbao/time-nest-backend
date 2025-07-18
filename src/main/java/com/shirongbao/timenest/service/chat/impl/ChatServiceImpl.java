@@ -5,17 +5,31 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shirongbao.timenest.common.entity.PageResult;
+import com.shirongbao.timenest.common.enums.ChatSessionRoleType;
 import com.shirongbao.timenest.common.enums.ChatSessionsTypeEnum;
-import com.shirongbao.timenest.dao.ChatSessionMembersMapper;
+import com.shirongbao.timenest.common.enums.IsDeletedEnum;
+import com.shirongbao.timenest.common.exception.BusinessException;
+import com.shirongbao.timenest.dao.ChatSessionsMembersMapper;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.bo.ChatSessionTargetUserBo;
 import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
+import com.shirongbao.timenest.pojo.entity.ChatSessionsMembers;
+import com.shirongbao.timenest.pojo.entity.ChatSessions;
+import com.shirongbao.timenest.pojo.entity.Users;
+import com.shirongbao.timenest.service.auth.UserService;
 import com.shirongbao.timenest.service.chat.ChatService;
+import com.shirongbao.timenest.service.chat.ChatSessionsMembersService;
+import com.shirongbao.timenest.service.chat.ChatSessionsService;
+import com.shirongbao.timenest.service.friend.FriendshipsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,7 +46,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ChatServiceImpl implements ChatService {
 
-    private final ChatSessionMembersMapper chatSessionMembersMapper;
+    private final ChatSessionsMembersMapper chatSessionsMembersMapper;
+
+    private final ChatSessionsMembersService chatSessionsMembersService;
+
+    private final ChatSessionsService chatSessionsService;
+
+    private final FriendshipsService friendshipsService;
+
+    private final UserService userService;
 
     @Override
     public PageResult<ChatSessionBo> getSessions(Integer pageNum, Integer pageSize, ChatSessionDto chatSessionDto) {
@@ -42,7 +64,7 @@ public class ChatServiceImpl implements ChatService {
         Page<ChatSessionBo> page = new Page<>(pageNum, pageSize);
 
         // 2. 直接调用分页查询方法，插件会自动处理分页和COUNT
-        IPage<ChatSessionBo> sessionPage = chatSessionMembersMapper.querySessions(page, chatSessionDto);
+        IPage<ChatSessionBo> sessionPage = chatSessionsMembersMapper.querySessions(page, chatSessionDto);
         List<ChatSessionBo> sessions = sessionPage.getRecords();
 
         // 4. 空数据直接返回
@@ -63,7 +85,71 @@ public class ChatServiceImpl implements ChatService {
         // 7. 统一设置显示字段
         sessions.forEach(this::setDisplayFields);
 
-        return new PageResult<>(sessions, (int)sessionPage.getTotal(), pageNum, pageSize);
+        return new PageResult<>(sessions, (int) sessionPage.getTotal(), pageNum, pageSize);
+    }
+
+    @Override
+    @Transactional
+    public ChatSessionBo findSingleSession(Long targetId) {
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        if (currentUserId == targetId) {
+            throw new BusinessException("天呐，你怎么还想跟自己聊天");
+        }
+
+        // 校验是否是好友
+        boolean isFriend = friendshipsService.checkIsFriend(targetId);
+        if (!isFriend) {
+            throw new BusinessException("你们当前还不是好友哦~暂时不能聊天");
+        }
+
+        // 查询是否有单聊会话
+        ChatSessionBo chatSessionBo = chatSessionsMembersMapper.querySingleSessionWithUserId(currentUserId, targetId);
+        if (!ObjectUtils.isEmpty(chatSessionBo)) {
+            return chatSessionBo;
+        }
+
+        // 创建两个用户的会话并返回结果
+        return createSession(targetId, currentUserId);
+    }
+
+    private ChatSessionBo createSession(Long targetId, long currentUserId) {
+        // 创建新的单聊会话
+        ChatSessions chatSessions = createChatSessions();
+        Long sessionId = chatSessions.getId();
+        createChatSessionsMembers(sessionId, currentUserId, targetId);
+        // 构造结果返回
+        ChatSessionBo chatSessionBo = new ChatSessionBo();
+        chatSessionBo.setSessionId(sessionId);
+        chatSessionBo.setSessionType(ChatSessionsTypeEnum.SINGLE.getCode());
+        Users usersByCache = userService.getUsersByCache(targetId.toString());
+        chatSessionBo.setDisplayName(usersByCache.getNickName());
+        chatSessionBo.setDisplayAvatar(usersByCache.getAvatarUrl());
+        return chatSessionBo;
+    }
+
+    private void createChatSessionsMembers(Long sessionId, long currentUserId, Long targetId) {
+        ChatSessionsMembers chatSessionsMembers1 = new ChatSessionsMembers();
+        chatSessionsMembers1.setSessionId(sessionId);
+        chatSessionsMembers1.setUserId(currentUserId);
+        chatSessionsMembers1.setRole(ChatSessionRoleType.MEMBER.getCode());
+
+        ChatSessionsMembers chatSessionsMembers2 = new ChatSessionsMembers();
+        chatSessionsMembers2.setSessionId(sessionId);
+        chatSessionsMembers2.setUserId(targetId);
+        chatSessionsMembers2.setRole(ChatSessionRoleType.MEMBER.getCode());
+
+        ArrayList<ChatSessionsMembers> chatSessionsMembers = new ArrayList<>();
+        chatSessionsMembers.add(chatSessionsMembers1);
+        chatSessionsMembers.add(chatSessionsMembers2);
+        chatSessionsMembersService.saveBatch(chatSessionsMembers);
+    }
+
+    private ChatSessions createChatSessions() {
+        ChatSessions chatSessions = new ChatSessions();
+        chatSessions.setSessionType(ChatSessionsTypeEnum.SINGLE.getCode());
+        chatSessions.setIsDeleted(IsDeletedEnum.NOT_DELETED.getCode());
+        chatSessionsService.save(chatSessions);
+        return chatSessions;
     }
 
     /**
@@ -76,7 +162,7 @@ public class ChatServiceImpl implements ChatService {
                 .collect(Collectors.toList());
 
         // 批量查询目标用户信息（包含用户详情）
-        List<ChatSessionTargetUserBo> targetUsers = chatSessionMembersMapper.queryTargetUsersWithUserInfo(sessionIds, currentUserId);
+        List<ChatSessionTargetUserBo> targetUsers = chatSessionsMembersMapper.queryTargetUsersWithUserInfo(sessionIds, currentUserId);
 
         // 构建会话ID到目标用户信息的映射
         Map<Long, ChatSessionTargetUserBo> sessionUserMap = targetUsers.stream()

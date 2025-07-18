@@ -16,5 +16,7 @@ public interface ChatConverter {
 
     ChatConverter INSTANCE = Mappers.getMapper(ChatConverter.class);
 
-    PageResult<ChatSessionVo> chatSessionBoVo(PageResult<ChatSessionBo> sessionBoPageResult);
+    PageResult<ChatSessionVo> chatSessionBoPageToVoPage(PageResult<ChatSessionBo> sessionBoPageResult);
+
+    ChatSessionVo chatSessionBoToVo(ChatSessionBo chatSessionBo);
 }

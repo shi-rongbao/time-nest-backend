@@ -8,5 +8,5 @@ import com.shirongbao.timenest.pojo.entity.ChatMessages;
  * @date: 2025-06-03
  * @description: 聊天消息持久层接口
  */
-public interface ChatMessagesDao extends BaseMapper<ChatMessages> {
+public interface ChatMessagesMapper extends BaseMapper<ChatMessages> {
 }

@@ -1,7 +1,7 @@
 package com.shirongbao.timenest.service.chat.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.shirongbao.timenest.dao.ChatMessagesDao;
+import com.shirongbao.timenest.dao.ChatMessagesMapper;
 import com.shirongbao.timenest.pojo.entity.ChatMessages;
 import com.shirongbao.timenest.service.chat.ChatMessagesService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ChatMessagesServiceImpl extends ServiceImpl<ChatMessagesDao, ChatMessages> implements ChatMessagesService {
+public class ChatMessagesServiceImpl extends ServiceImpl<ChatMessagesMapper, ChatMessages> implements ChatMessagesService {
 
 }

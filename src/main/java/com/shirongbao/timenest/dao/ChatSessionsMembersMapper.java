@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.bo.ChatSessionTargetUserBo;
 import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
-import com.shirongbao.timenest.pojo.entity.ChatSessionMembers;
+import com.shirongbao.timenest.pojo.entity.ChatSessionsMembers;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @date: 2025-07-17
  * @description: 聊天会话成员持久层接口
  */
-public interface ChatSessionMembersMapper extends BaseMapper<ChatSessionMembers> {
+public interface ChatSessionsMembersMapper extends BaseMapper<ChatSessionsMembers> {
 
     /**
      * 查询会话列表
@@ -30,4 +30,8 @@ public interface ChatSessionMembersMapper extends BaseMapper<ChatSessionMembers>
     List<ChatSessionTargetUserBo> queryTargetUsersWithUserInfo(@Param("sessionIds") List<Long> sessionIds,
                                                                @Param("currentUserId") Long currentUserId);
 
+    /**
+     * 根据两个用户id查询单聊
+     */
+    ChatSessionBo querySingleSessionWithUserId(@Param("currentUserId") long currentUserId, @Param("targetId") Long targetId);
 }

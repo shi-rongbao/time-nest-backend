@@ -1,6 +1,8 @@
 package com.shirongbao.timenest.pojo.dto;
 
 import com.shirongbao.timenest.common.entity.PageInfo;
+import com.shirongbao.timenest.validation.FindSessionValidation;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,6 +16,7 @@ import lombok.EqualsAndHashCode;
 public class ChatSessionDto extends PageInfo {
 
     // 用户id
+    @NotNull(message = "目标用户id不能为空", groups = {FindSessionValidation.class})
     private Long userId;
 
     // 会话类型：1-单聊；2-群聊；null-全部

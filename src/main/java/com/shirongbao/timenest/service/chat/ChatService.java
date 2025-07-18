@@ -14,4 +14,6 @@ public interface ChatService {
     // 分页获取会话列表
     PageResult<ChatSessionBo> getSessions(Integer pageNum, Integer pageSize, ChatSessionDto chatSessionDto);
 
+    // 查询单聊会话信息
+    ChatSessionBo findSingleSession(Long targetId);
 }

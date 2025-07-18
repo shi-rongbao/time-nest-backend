@@ -7,7 +7,9 @@ import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
 import com.shirongbao.timenest.pojo.vo.ChatSessionVo;
 import com.shirongbao.timenest.service.chat.ChatService;
+import com.shirongbao.timenest.validation.FindSessionValidation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,8 +36,17 @@ public class ChatController {
         chatSessionDto.setSessionType(sessionType);
         chatSessionDto.setKeyword(keyword);
         PageResult<ChatSessionBo> sessionBoPageResult = chatService.getSessions(pageNum, pageSize, chatSessionDto);
-        PageResult<ChatSessionVo> sessionVoPageResult = ChatConverter.INSTANCE.chatSessionBoVo(sessionBoPageResult);
+        PageResult<ChatSessionVo> sessionVoPageResult = ChatConverter.INSTANCE.chatSessionBoPageToVoPage(sessionBoPageResult);
         return Result.success(sessionVoPageResult);
+    }
+
+    // 获取单聊会话
+    @PostMapping("/findSingleSession")
+    public Result<ChatSessionVo> findSingleSession(@RequestBody @Validated({FindSessionValidation.class}) ChatSessionDto chatSessionDto) {
+        Long targetId = chatSessionDto.getUserId();
+        ChatSessionBo chatSessionBo = chatService.findSingleSession(targetId);
+        ChatSessionVo chatSessionVo = ChatConverter.INSTANCE.chatSessionBoToVo(chatSessionBo);
+        return Result.success(chatSessionVo);
     }
 
 }

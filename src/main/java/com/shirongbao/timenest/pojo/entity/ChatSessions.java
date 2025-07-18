@@ -1,5 +1,7 @@
 package com.shirongbao.timenest.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,6 +14,7 @@ import java.util.Date;
 @Data
 public class ChatSessions {
     // 主键ID
+    @TableId(type = IdType.AUTO, value = "id")
     private Long id;
 
     // 会话类型：1-单聊；2-群聊
