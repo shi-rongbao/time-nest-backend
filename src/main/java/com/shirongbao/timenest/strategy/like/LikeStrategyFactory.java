@@ -1,6 +1,5 @@
 package com.shirongbao.timenest.strategy.like;
 
-import com.shirongbao.timenest.common.enums.LikeTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;

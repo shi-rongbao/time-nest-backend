@@ -12,7 +12,6 @@ import com.shirongbao.timenest.common.enums.ChatSessionsTypeEnum;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.RecalledStatusEnum;
 import com.shirongbao.timenest.common.exception.BusinessException;
-import com.shirongbao.timenest.config.SnowflakeConfig;
 import com.shirongbao.timenest.dao.ChatSessionsMembersMapper;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.bo.ChatSessionTargetUserBo;

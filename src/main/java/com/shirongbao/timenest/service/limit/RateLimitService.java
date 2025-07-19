@@ -1,6 +1,5 @@
 package com.shirongbao.timenest.service.limit;
 
-import com.shirongbao.timenest.common.constant.RedisConstant;
 import com.shirongbao.timenest.common.entity.RateLimitInfo;
 import com.shirongbao.timenest.utils.RedisUtil;
 import lombok.RequiredArgsConstructor;
