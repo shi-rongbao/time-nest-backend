@@ -34,4 +34,7 @@ public interface ChatSessionsMembersMapper extends BaseMapper<ChatSessionsMember
      * 根据两个用户id查询单聊
      */
     ChatSessionBo querySingleSessionWithUserId(@Param("currentUserId") long currentUserId, @Param("targetId") Long targetId);
+
+    // 新增未读数
+    void increUnreadCount(@Param("sessionId") Long sessionId, @Param("senderId") Long senderId);
 }

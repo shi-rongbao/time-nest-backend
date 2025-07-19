@@ -9,10 +9,19 @@
         <result property="unreadCount" column="unread_count"/>
         <result property="lastAckTime" column="last_ack_time"/>
         <result property="role" column="role"/>
+        <result property="isDeleted" column="is_deleted"/>
         <result property="joinedAt" column="joined_at"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
+
+    <update id="increUnreadCount">
+        update chat_sessions_members
+        set unread_count = unread_count + 1
+        where session_id = #{sessionId}
+        and user_id != #{senderId}
+        and is_deleted = 0
+    </update>
 
     <select id="querySessions" resultType="com.shirongbao.timenest.pojo.bo.ChatSessionBo">
         select cs.id as sessionId,

@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.service.chat.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.lang.Snowflake;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -11,10 +12,13 @@ import com.shirongbao.timenest.common.enums.ChatSessionsTypeEnum;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
 import com.shirongbao.timenest.common.enums.RecalledStatusEnum;
 import com.shirongbao.timenest.common.exception.BusinessException;
+import com.shirongbao.timenest.config.SnowflakeConfig;
 import com.shirongbao.timenest.dao.ChatSessionsMembersMapper;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.bo.ChatSessionTargetUserBo;
 import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
+import com.shirongbao.timenest.pojo.dto.mq.ChatMessageMqDto;
+import com.shirongbao.timenest.pojo.entity.ChatMessages;
 import com.shirongbao.timenest.pojo.entity.ChatSessionsMembers;
 import com.shirongbao.timenest.pojo.entity.ChatSessions;
 import com.shirongbao.timenest.pojo.entity.Users;
@@ -32,8 +36,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.validation.BindException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,8 @@ public class ChatServiceImpl implements ChatService {
     private final UserService userService;
 
     private final ChatMessagesService chatMessagesService;
+
+    private final Snowflake snowflake;
 
     @Override
     public PageResult<ChatSessionBo> getSessions(Integer pageNum, Integer pageSize, ChatSessionDto chatSessionDto) {
@@ -124,7 +128,7 @@ public class ChatServiceImpl implements ChatService {
     public MessageHistoryVo getHistoryMessage(Long sessionId, Long cursor, Integer pageSize) {
         long currentUserId = StpUtil.getLoginIdAsLong();
         // 基础校验，看当前用户是否属于会话的成员
-        boolean check = historyBaseCheck(currentUserId, sessionId);
+        boolean check = isUserMemberOfSession(currentUserId, sessionId);
         if (!check) {
             throw new BusinessException("当前查询参数异常！");
         }
@@ -159,15 +163,57 @@ public class ChatServiceImpl implements ChatService {
         return messageHistoryVo;
     }
 
-    // 历史记录基础校验
-    private boolean historyBaseCheck(long currentUserId, Long sessionId) {
+    // 用户是否属于会话
+    public boolean isUserMemberOfSession(Long userId, Long sessionId) {
         LambdaQueryWrapper<ChatSessionsMembers> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ChatSessionsMembers::getUserId, currentUserId);
+        wrapper.eq(ChatSessionsMembers::getUserId, userId);
         wrapper.eq(ChatSessionsMembers::getSessionId, sessionId);
         wrapper.eq(ChatSessionsMembers::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
 
         long count = chatSessionsMembersService.count(wrapper);
         return count != 0;
+    }
+
+    @Override
+    public List<Long> getMemberIdsBySessionId(Long sessionId) {
+        LambdaQueryWrapper<ChatSessionsMembers> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ChatSessionsMembers::getSessionId, sessionId);
+        wrapper.eq(ChatSessionsMembers::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+
+        wrapper.select(ChatSessionsMembers::getUserId);
+        // 只需要所有成员的id即可
+        return chatSessionsMembersService.listObjs(wrapper, id -> (Long) id);
+    }
+
+    @Override
+    public ChatMessages saveChatMessages(ChatMessageMqDto mqDto) {
+        ChatMessages chatMessages = new ChatMessages();
+
+        chatMessages.setId(snowflake.nextId());
+        chatMessages.setSessionId(mqDto.getSessionId());
+        chatMessages.setSenderId(mqDto.getSenderId());
+        chatMessages.setMessageType(mqDto.getMessageType());
+        chatMessages.setContent(mqDto.getContent());
+        chatMessages.setSendAt(mqDto.getCreatedAt());
+        chatMessages.setRecalled(RecalledStatusEnum.NORMAL.getCode());
+
+        chatMessagesService.save(chatMessages);
+        return chatMessages;
+    }
+
+    @Override
+    public void updateChatSessionAbstract(ChatMessages chatMessages) {
+        ChatSessions chatSessions = new ChatSessions();
+        chatSessions.setId(chatMessages.getSessionId());
+        chatSessions.setLastMessageContent(chatMessages.getContent());
+        chatSessions.setLastMessageTime(chatMessages.getCreatedAt());
+
+        chatSessionsService.updateById(chatSessions);
+    }
+
+    @Override
+    public void increUnreadCount(Long sessionId, Long senderId) {
+        chatSessionsMembersService.increUnreadCount(sessionId, senderId);
     }
 
     private ChatSessionBo createSession(Long targetId, long currentUserId) {
