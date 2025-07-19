@@ -3,6 +3,7 @@ package com.shirongbao.timenest.service.chat;
 import com.shirongbao.timenest.common.entity.PageResult;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
+import com.shirongbao.timenest.pojo.vo.MessageHistoryVo;
 
 /**
  * @author: ShiRongbao
@@ -16,4 +17,7 @@ public interface ChatService {
 
     // 查询单聊会话信息
     ChatSessionBo findSingleSession(Long targetId);
+
+    // 获取历史消息
+    MessageHistoryVo getHistoryMessage(Long sessionId, Long cursor, Integer pageSize);
 }

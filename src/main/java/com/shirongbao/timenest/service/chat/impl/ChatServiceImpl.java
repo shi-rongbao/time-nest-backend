@@ -1,6 +1,7 @@
 package com.shirongbao.timenest.service.chat.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +9,7 @@ import com.shirongbao.timenest.common.entity.PageResult;
 import com.shirongbao.timenest.common.enums.ChatSessionRoleType;
 import com.shirongbao.timenest.common.enums.ChatSessionsTypeEnum;
 import com.shirongbao.timenest.common.enums.IsDeletedEnum;
+import com.shirongbao.timenest.common.enums.RecalledStatusEnum;
 import com.shirongbao.timenest.common.exception.BusinessException;
 import com.shirongbao.timenest.dao.ChatSessionsMembersMapper;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
@@ -16,7 +18,10 @@ import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
 import com.shirongbao.timenest.pojo.entity.ChatSessionsMembers;
 import com.shirongbao.timenest.pojo.entity.ChatSessions;
 import com.shirongbao.timenest.pojo.entity.Users;
+import com.shirongbao.timenest.pojo.vo.ChatMessageVo;
+import com.shirongbao.timenest.pojo.vo.MessageHistoryVo;
 import com.shirongbao.timenest.service.auth.UserService;
+import com.shirongbao.timenest.service.chat.ChatMessagesService;
 import com.shirongbao.timenest.service.chat.ChatService;
 import com.shirongbao.timenest.service.chat.ChatSessionsMembersService;
 import com.shirongbao.timenest.service.chat.ChatSessionsService;
@@ -28,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.validation.BindException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +61,8 @@ public class ChatServiceImpl implements ChatService {
     private final FriendshipsService friendshipsService;
 
     private final UserService userService;
+
+    private final ChatMessagesService chatMessagesService;
 
     @Override
     public PageResult<ChatSessionBo> getSessions(Integer pageNum, Integer pageSize, ChatSessionDto chatSessionDto) {
@@ -110,6 +118,56 @@ public class ChatServiceImpl implements ChatService {
 
         // 创建两个用户的会话并返回结果
         return createSession(targetId, currentUserId);
+    }
+
+    @Override
+    public MessageHistoryVo getHistoryMessage(Long sessionId, Long cursor, Integer pageSize) {
+        long currentUserId = StpUtil.getLoginIdAsLong();
+        // 基础校验，看当前用户是否属于会话的成员
+        boolean check = historyBaseCheck(currentUserId, sessionId);
+        if (!check) {
+            throw new BusinessException("当前查询参数异常！");
+        }
+
+        // 传入limit为pageSize + 1，用于做hasMore记录
+        List<ChatMessageVo> messages = chatMessagesService.selectMessageByCursor(sessionId, cursor, pageSize + 1);
+        boolean hasMore = messages.size() > pageSize;
+
+        if (hasMore) {
+            // 只有当记录数真的超过pageSize时，才移除最后一条
+            messages.remove(messages.size() - 1);
+        }
+
+        // 处理撤回消息 有撤回消息的在内存中置空内容
+        messages.forEach(msg -> {
+            if (msg.getRecalled() != null && msg.getRecalled().equals(RecalledStatusEnum.RECALLED.getCode())) {
+                msg.setContent("");
+            }
+        });
+
+        // 设置游标并返回
+        MessageHistoryVo messageHistoryVo = new MessageHistoryVo();
+        messageHistoryVo.setRecords(messages);
+        messageHistoryVo.setHasMore(hasMore);
+        if (!messages.isEmpty()) {
+            // nextCursor是当前返回列表中的最后一条（也就是最老的一条）消息的ID
+            messageHistoryVo.setNextCursor(messages.get(messages.size() - 1).getMessageId());
+        } else {
+            messageHistoryVo.setNextCursor(null);
+        }
+
+        return messageHistoryVo;
+    }
+
+    // 历史记录基础校验
+    private boolean historyBaseCheck(long currentUserId, Long sessionId) {
+        LambdaQueryWrapper<ChatSessionsMembers> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ChatSessionsMembers::getUserId, currentUserId);
+        wrapper.eq(ChatSessionsMembers::getSessionId, sessionId);
+        wrapper.eq(ChatSessionsMembers::getIsDeleted, IsDeletedEnum.NOT_DELETED.getCode());
+
+        long count = chatSessionsMembersService.count(wrapper);
+        return count != 0;
     }
 
     private ChatSessionBo createSession(Long targetId, long currentUserId) {

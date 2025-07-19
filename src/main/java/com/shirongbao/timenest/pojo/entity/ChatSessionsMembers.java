@@ -32,6 +32,9 @@ public class ChatSessionsMembers {
     // 在群聊中的角色（单聊时都是MEMBER），枚举值：1-MEMBER，2-ADMIN，3-OWNER
     private Integer role;
 
+    // 逻辑删除标识：1-已删除；0-未删除
+    private Integer isDeleted;
+
     // 加入会话的时间
     private Date joinedAt;
 

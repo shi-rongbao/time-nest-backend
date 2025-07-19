@@ -6,6 +6,7 @@ import com.shirongbao.timenest.converter.ChatConverter;
 import com.shirongbao.timenest.pojo.bo.ChatSessionBo;
 import com.shirongbao.timenest.pojo.dto.ChatSessionDto;
 import com.shirongbao.timenest.pojo.vo.ChatSessionVo;
+import com.shirongbao.timenest.pojo.vo.MessageHistoryVo;
 import com.shirongbao.timenest.service.chat.ChatService;
 import com.shirongbao.timenest.validation.FindSessionValidation;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,15 @@ public class ChatController {
         ChatSessionBo chatSessionBo = chatService.findSingleSession(targetId);
         ChatSessionVo chatSessionVo = ChatConverter.INSTANCE.chatSessionBoToVo(chatSessionBo);
         return Result.success(chatSessionVo);
+    }
+
+    // 获取历史消息
+    @GetMapping("/{sessionId}/getHistoryMessage")
+    public Result<MessageHistoryVo> getHistoryMessage(@PathVariable("sessionId") Long sessionId,
+                                            @RequestParam(value = "cursor", required = false) Long cursor,
+                                            @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
+        MessageHistoryVo messageHistoryVo = chatService.getHistoryMessage(sessionId, cursor, pageSize);
+        return Result.success(messageHistoryVo);
     }
 
 }

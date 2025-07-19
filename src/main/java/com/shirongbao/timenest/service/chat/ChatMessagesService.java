@@ -2,6 +2,9 @@ package com.shirongbao.timenest.service.chat;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shirongbao.timenest.pojo.entity.ChatMessages;
+import com.shirongbao.timenest.pojo.vo.ChatMessageVo;
+
+import java.util.List;
 
 /**
  * @author: ShiRongbao
@@ -10,5 +13,7 @@ import com.shirongbao.timenest.pojo.entity.ChatMessages;
  */
 public interface ChatMessagesService extends IService<ChatMessages> {
 
+    // 根据游标查询消息列表
+    List<ChatMessageVo> selectMessageByCursor(Long sessionId, Long cursor, int limit);
 
 }

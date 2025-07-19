@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shirongbao.timenest.dao.ChatMessagesMapper">
+
+    <select id="selectMessageByCursor" resultType="com.shirongbao.timenest.pojo.vo.ChatMessageVo">
+        select cm.id as messageId,
+               cm.sender_id as senderId,
+               u.nick_name as senderNickname,
+               u.avatar_url as senderAvatar,
+               cm.message_type as messageType,
+               cm.content as content,
+               cm.recalled as recalled,
+               cm.created_at as createdAt
+        from chat_messages cm
+        join users u on cm.sender_id = u.id
+        where cm.session_id = #{sessionId}
+        <if test="cursor != null and cursor > 0">
+            AND cm.id &lt; #{cursor}
+        </if>
+        -- 排序是游标分页的必要前提
+        ORDER BY cm.id DESC
+        -- 获取比pageSize多一条的记录，用于判断是否还有更多
+        LIMIT #{limit}
+    </select>
+
+</mapper>
