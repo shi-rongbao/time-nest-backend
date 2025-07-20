@@ -27,8 +27,8 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
         if (request instanceof ServletServerHttpRequest) {
             ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
             // 从URL的查询参数中获取token
-            // 前端连接格式: ws://.../ws/user?token=xxxxxxx
-            String token = servletRequest.getServletRequest().getParameter("token");
+            // 前端连接格式: ws://.../ws/user?satoken=xxxxxxx
+            String token = servletRequest.getServletRequest().getParameter("satoken");
 
             if (StringUtils.isNotBlank(token)) {
                 try {

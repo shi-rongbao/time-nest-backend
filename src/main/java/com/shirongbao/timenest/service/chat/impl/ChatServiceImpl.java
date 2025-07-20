@@ -205,7 +205,7 @@ public class ChatServiceImpl implements ChatService {
         ChatSessions chatSessions = new ChatSessions();
         chatSessions.setId(chatMessages.getSessionId());
         chatSessions.setLastMessageContent(chatMessages.getContent());
-        chatSessions.setLastMessageTime(chatMessages.getCreatedAt());
+        chatSessions.setLastMessageTime(chatMessages.getSendAt());
 
         chatSessionsService.updateById(chatSessions);
     }

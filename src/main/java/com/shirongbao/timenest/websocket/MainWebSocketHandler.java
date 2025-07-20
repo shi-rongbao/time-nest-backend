@@ -117,7 +117,7 @@ public class MainWebSocketHandler extends TextWebSocketHandler {
      */
     private void handleChatMessage(WebSocketSession session, JsonNode data) throws JsonProcessingException {
         Object objUserId = session.getAttributes().get("userId");
-        Long userId = (Long) objUserId;
+        Long userId = Long.parseLong(objUserId.toString());
         try {
             // 1. 数据解析与校验
             ChatMessageRequest chatMessage = objectMapper.treeToValue(data, ChatMessageRequest.class);
