@@ -194,9 +194,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
     @Override
     public void logout() {
-        StpUtil.logout();
         // 把当前token的缓存移除
         removeUserCache(StpUtil.getLoginIdAsString());
+        StpUtil.logout();
     }
 
     @Override
