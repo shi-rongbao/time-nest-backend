@@ -1,5 +1,7 @@
 package com.shirongbao.timenest.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,7 +13,9 @@ import java.util.Date;
  */
 @Data
 public class Users {
+
     // 主键
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     // 唯一不重复用户名

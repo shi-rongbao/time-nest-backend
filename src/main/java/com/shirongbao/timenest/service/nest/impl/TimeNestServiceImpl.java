@@ -96,8 +96,10 @@ public class TimeNestServiceImpl extends ServiceImpl<TimeNestMapper, TimeNest> i
     public void unlockNest(Long nestId) {
         // 先拿到这个nest
         TimeNest timeNest = getById(nestId);
-        if (timeNest == null) {
-            throw new BusinessException("拾光纪不存在或已被删除");
+
+        // 如果已经解锁过了，不再重复解锁
+        if (timeNest == null || timeNest.getUnlockedStatus() == UnlockedStatusEnum.UNLOCK.getCode()) {
+            throw new BusinessException("拾光纪不存在或已被解锁~");
         }
 
         // 设置解锁信息

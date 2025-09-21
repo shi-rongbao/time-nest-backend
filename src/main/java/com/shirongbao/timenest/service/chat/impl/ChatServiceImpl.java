@@ -215,6 +215,16 @@ public class ChatServiceImpl implements ChatService {
         chatSessionsMembersService.increUnreadCount(sessionId, senderId);
     }
 
+    @Override
+    public void joinTimeNestGroup(Long userId) {
+        ChatSessionsMembers chatSessionsMembers = new ChatSessionsMembers();
+        chatSessionsMembers.setSessionId(3L);
+        chatSessionsMembers.setUserId(userId);
+        chatSessionsMembers.setRole(ChatSessionRoleType.MEMBER.getCode());
+
+        chatSessionsMembersService.save(chatSessionsMembers);
+    }
+
     private ChatSessionBo createSession(Long targetId, long currentUserId) {
         // 创建新的单聊会话
         ChatSessions chatSessions = createChatSessions();

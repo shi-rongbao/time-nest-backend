@@ -40,7 +40,7 @@ public final class RedisConstant {
     public static final String SESSION_USER_PREFIX = "chat:session:user:";
 
     /** 用户 WebSocket 心跳记录（String） */
-    public static final String USER_HEARTBEAT_PREFIX = "chat:websocket:heartbeat:";
+    public static final String USER_HEARTBEAT_PREFIX = "chat:websocket:heartbeat";
 
     // ========== 微信登录相关常量 ==========
     /** 微信登录验证码前缀 */

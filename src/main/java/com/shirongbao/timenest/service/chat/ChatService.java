@@ -39,4 +39,7 @@ public interface ChatService {
 
     // 新增未读数
     void increUnreadCount(Long sessionId, Long senderId);
+
+    // 新用户自动加入拾光纪群组
+    void joinTimeNestGroup(Long userId);
 }

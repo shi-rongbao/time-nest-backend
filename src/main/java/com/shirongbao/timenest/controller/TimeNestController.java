@@ -2,6 +2,7 @@ package com.shirongbao.timenest.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shirongbao.timenest.anno.RateLimit;
+import com.shirongbao.timenest.anno.UserLockMethod;
 import com.shirongbao.timenest.common.entity.Result;
 import com.shirongbao.timenest.converter.TimeNestConverter;
 import com.shirongbao.timenest.pojo.bo.TimeNestBo;
@@ -35,6 +36,8 @@ public class TimeNestController {
 
     private final TimeNestLikeCountsService timeNestLikeCountsService;
 
+    private final String LOCK_KEY = "TIME_NEST_UNLOCK";
+
     // 查询“我”快要解锁的拾光纪条目列表（最多6个）
     @GetMapping("/queryMyUnlockingNestList")
     public Result<List<TimeNestVo>> queryMyUnlockingNestList() {
@@ -45,6 +48,7 @@ public class TimeNestController {
 
     // 提前解锁nest
     @PostMapping("/unlockNest")
+    @UserLockMethod(key = LOCK_KEY, expirationTime = 10)
     public Result<Boolean> unlockNest(@RequestBody @Validated(TimeNestIdValidation.class) TimeNestDto timeNestDto) {
         Long nestId = timeNestDto.getId();
         timeNestService.unlockNest(nestId);

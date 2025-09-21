@@ -25,10 +25,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -121,7 +118,8 @@ public class FriendshipsServiceImpl extends ServiceImpl<FriendshipsMapper, Frien
         // 等待所有任务完成
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
         allFutures.join();
-
+        // 根据好友id进行排序
+        usersVoList.sort(Comparator.comparing(UsersVo::getId));
         // 执行完就可以返回了
         return usersVoList;
     }
