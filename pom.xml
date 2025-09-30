@@ -181,6 +181,13 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.27</version>
         </dependency>
+
+        <!--智谱 ai-->
+        <dependency>
+            <groupId>ai.z.openapi</groupId>
+            <artifactId>zai-sdk</artifactId>
+            <version>0.0.5</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
